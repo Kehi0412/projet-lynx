@@ -37,5 +37,13 @@
     </form>
 
   </div>
+  <div class="toast-zome">
+    @if (erreur()){
+      <div class="toast toast-erreur">{{erreur()}}</div>
+    }
+    @if (succes()){
+      <div class="toast toast-succes">Connexion reussie! Redirection...</div>
+    }
+  </div>
 
 </div>
