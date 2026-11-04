@@ -13,7 +13,7 @@
       <input
         type="text"
         [(ngModel)]="matricule"
-        (input)="erreur =''"
+        (input)="erreur.set('')"
         name="matricule"
         placeholder="matricule(ex:123456)"
         required
@@ -27,9 +27,6 @@
         placeholder="Votre mot de passe"
         required
       >
-      @if (erreur){
-        <p class="erreur">{{erreur}}</p>
-      }
       <button type="submit">Se connecter</button>
 
     </form>

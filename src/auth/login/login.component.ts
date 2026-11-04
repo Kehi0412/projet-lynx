@@ -15,7 +15,7 @@ export class LoginComponent {
   matricule = '';
   password = '';
   erreur=signal('');
-  succes ='signal(false)';
+  succes =signal(false);
 
   constructor(private router: Router) {}
 
@@ -24,7 +24,7 @@ export class LoginComponent {
     if (this.matricule==='123456' && this.password==='tresor') {
       this.erreur.set('');
       this.succes.set(true);
-       setTimeout(()=>this.router.navigate(['/accueil'])1500);
+       setTimeout(()=>this.router.navigate(['/accueil']),1500);
       }  else {
         this.erreur.set('matricule ou mot de passe incorrect');
         setTimeout(() => this.erreur.set(''),3000);
