@@ -1,44 +1,6 @@
-{ box-sizing: border-box; }
-
-body {
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-content: center;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
-
-h1 { text-align: center; font-size: 22px; color: #454545; margin-bottom: 50px; }
-
-.carte {
-  width:  320px;
-  margin:0;
-  padding: 15px;
-  background: white;
-  border-radius: 15px;
-  overflow: hidden;
- box-shadow: 0 4px 20px rgba(0,0,0,0,12);
-
-}
-
-.entete { background: #ff9000; color: white; padding: 30px; min-height: 90px; }
-
-.logo {
-  width: 55px; height: 55px;
-  background: white; border: 2px solid #63b878; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin: -28px 16px 1px;
-}
-
-form { padding: 0 20px 20px; font-size: 14px; color: black}
-label { display: block; margin: 18px 0 10px; }
-
-input, .connexion { width: 100%; padding: 10px; border-radius: 4px; font-size: 13px; }
-input { border: 1px solid #ddd; }
-
-.password-box { display: flex; }
-.password-box input { flex: 1; }
-#togglePassword { border: none; background: #f0f1f5; padding: 0 14px; cursor: pointer; }
-
-.connexion { border: none; background: #63b878; color: white; cursor: pointer; }
-.connexion:hover { background: #398d50; }
