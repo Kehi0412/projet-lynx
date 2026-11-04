@@ -1,0 +1,41 @@
+<div class="login-page">
+
+  <div class="login-box">
+    <img src="/img_1.png" alt="logo Tresor publuc" class="logo">
+
+    <h2>Bienvenue</h2>
+
+    <p>Connectez-vous à Linx</p>
+
+    <form (ngSubmit)=" seConnecter()">
+
+      <label>Matricule</label>
+      <input
+        type="text"
+        [(ngModel)]="matricule"
+        (input)="erreur =''"
+        name="matricule"
+        placeholder="matricule(ex:123456)"
+        required
+      >
+
+      <label>Mot de passe</label>
+      <input
+        type="password"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Votre mot de passe"
+        required
+      >
+      @if (erreur){
+        <p class="erreur">{{erreur}}</p>
+      }
+      <button type="submit">
+        Se connecter
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
