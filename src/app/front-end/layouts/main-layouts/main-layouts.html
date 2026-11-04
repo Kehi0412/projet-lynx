@@ -1,0 +1,23 @@
+
+
+<div class="layout">
+  <aside class="menu">
+    <div class="menu-logo">
+      <img src="/img_1.png" alt="Logo">
+      <span>LINX</span>
+    </div>
+    <a class="actif" routerLink="accueil">🏠 Tableau de bord</a>
+    <a routerLink="mission" routerLinkActive="routerLinkActive">📋 Missions</a>
+    <a routerLink="inspection">🔍 Inspections</a>
+    <a>📑 Audits</a>
+    <a>📊 Rapports</a>
+
+    <a routerLink="/parametres">⚙️ Paramètres</a>
+    <button (click)="deconnexion()">⎋ Déconnexion</button>
+
+  </aside>
+
+  <main class="contenu">
+<router-outlet/>
+  </main>
+</div>

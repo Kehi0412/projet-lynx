@@ -1,0 +1,53 @@
+<div class="banner">
+  <h1>Inspections</h1>
+  <p>Gestion des années d'exercice, catégories et types de mission</p>
+</div>
+<section class="tableau">
+  <div class="tableau-haut">
+    <h2>Activités {{ anneeChoisie }}</h2>
+    <select [(ngModel)]="typeChoisi">
+      <option>Tous</option>
+      <option>Audit</option>
+      <option>Inspection</option>
+      <option>Mission</option>
+    </select>
+    <button type="button" class="btn btn-primary" (click)="openModalWithClass(template)">ajouter</button>
+    <ng-template #template>
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Modal</h4>
+        <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Just a modal with a bunch of words inside, nothing serious.
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="defile">
+    <table>
+      <thead>
+      <tr><th>Réf.</th><th>Type</th><th>Structure</th><th>Statut</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        @for (m of missionsFiltrees; track m.ref) {
+          <tr>
+            <td>{{ m.ref }}</td>
+            <td>{{ m.type }}</td>
+            <td>{{ m.structure }}</td>
+            <td><span class="badge" [class]="'badge ' + (m.statut === 'En cours' ? 'cours' : m.statut === 'Terminée' ? 'fini' : 'prevu')">{{ m.statut }}</span></td>
+            <td class="center">
+              <button type="button" class="icon-btn" title="Télécharger"
+                      >⬇️</button>
+              <button type="button" class="icon-btn" title="Modifier" >✏️</button>
+              <button type="button" class="icon-btn" title="Supprimer" >🗑️</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="4">Aucune activité pour cette sélection.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
