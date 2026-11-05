@@ -1,1 +1,107 @@
-<p>missions works!</p>
+<header class="entete">
+  <h1>Missions</h1>
+  <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
+</header>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>Code</th><th>Début</th><th>Fin</th><th>Localisation</th><th>Chef de poste</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (m of missions(); track $index) {
+        <tr>
+          <td>{{ m.Cod_miss }}</td>
+          <td>{{ m.D_db_miss }}</td>
+          <td>{{ m.D_fin_miss }}</td>
+          <td>{{ m.Loc_miss }}</td>
+          <td>{{ m.Chf_pste_miss }}</td>
+        </tr>
+      } @empty {
+        <tr><td colspan="5" class="vide">Aucune mission. Cliquez sur « Ajouter ».</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<dialog #modal (click)="clicFond($event)">
+  <div class="m-head">
+    <h2>Ajouter une mission</h2>
+    <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="enregistrer()">
+    <div class="grid">
+      <div>
+        <label for="Cod_miss">Code mission</label>
+        <input id="Cod_miss" formControlName="Cod_miss">
+        @if (form.controls.Cod_miss.touched && form.controls.Cod_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="Loc_miss">Localisation</label>
+        <input id="Loc_miss" formControlName="Loc_miss">
+        @if (form.controls.Loc_miss.touched && form.controls.Loc_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="D_db_miss">Date de début</label>
+        <input id="D_db_miss" type="date" formControlName="D_db_miss">
+        @if (form.controls.D_db_miss.touched && form.controls.D_db_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="D_fin_miss">Date de fin</label>
+        <input id="D_fin_miss" type="date" formControlName="D_fin_miss">
+        @if (form.controls.D_fin_miss.touched && form.controls.D_fin_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+        @if (form.hasError('datesInvalides')) {
+          <div class="err">La date de fin doit suivre la date de début.</div>
+        }
+      </div>
+
+      <div>
+        <label for="Stru_contr_miss">Structure contrôlée</label>
+        <input id="Stru_contr_miss" formControlName="Stru_contr_miss">
+        @if (form.controls.Stru_contr_miss.touched && form.controls.Stru_contr_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="Chf_pste_miss">Chef de poste</label>
+        <input id="Chf_pste_miss" formControlName="Chf_pste_miss">
+        @if (form.controls.Chf_pste_miss.touched && form.controls.Chf_pste_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div class="full">
+        <label for="Ma_chf_pste_miss">Maître chef de poste</label>
+        <input id="Ma_chf_pste_miss" formControlName="Ma_chf_pste_miss">
+      </div>
+
+      <div class="full">
+        <label for="Obj_miss">Objet de la mission</label>
+        <textarea id="Obj_miss" formControlName="Obj_miss"></textarea>
+        @if (form.controls.Obj_miss.touched && form.controls.Obj_miss.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+    </div>
+
+    <div class="m-foot">
+      <button class="btn" type="button" (click)="fermer()">Annuler</button>
+      <button class="btn primary" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</dialog>
