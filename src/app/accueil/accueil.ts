@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {Signal} from '@angular/core';
 
 interface Mission {
   ref: string;
@@ -22,7 +21,7 @@ export class Accueil {
   annees = [2026, 2025, 2024, 2023];
   anneeChoisie = 2026;
   typeChoisi = 'Tous';
-
+  afficherAudits:boolean=false;
 
   missions: Mission[] = [
     { ref: 'M-001', annee: 2026, type: 'Audit', structure: 'Trésorerie générale', statut: 'En cours' },
@@ -34,6 +33,7 @@ export class Accueil {
   ];
 
   constructor(private router: Router) {}
+
 
   get missionsFiltrees(): Mission[] {
     return this.missions.filter(m =>
