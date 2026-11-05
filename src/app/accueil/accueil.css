@@ -167,3 +167,13 @@ tbody tr:hover { background: #fff1de; }
   .menu-logo { width: 100%; border-bottom: none; margin-bottom: 8px; }
   .menu button { margin-top: 0; }
 }
+.page-audits{
+  background: white;
+  padding: 30px;
+  margin-top: 20px;
+  border-radius: 15px;
+  border-top: 4px solid #d99b45;
+}
+.page-audits h1{
+  color:#176b4b;
+}
