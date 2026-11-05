@@ -45,7 +45,13 @@
   padding: 11px 14px;
   border-radius: 8px;
   cursor: pointer;
+  color: #fff;
+  text-decoration: none;
   transition: background 0.2s, transform 0.2s;
+}
+
+.menu a:visited {
+  color: #fff;
 }
 .menu a:hover {
   background: rgba(255, 255, 255, 0.18);
