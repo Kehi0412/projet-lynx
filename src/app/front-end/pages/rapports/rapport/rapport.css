@@ -1,0 +1,68 @@
+.entete { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+h1 { margin: 0; font-size: 1.6rem; }
+h2 { margin: 32px 0 12px; font-size: 1.15rem; color: var(--linx-green-dark); }
+
+.btn { font: inherit; padding: 10px 18px; border: 1px solid #ccd5df; border-radius: 8px; background: #fff; cursor: pointer; }
+.btn.primary { background: var(--linx-orange); border-color: var(--linx-orange); color: #fff; font-weight: 600; }
+.lien { background: none; border: 0; padding: 0; font: inherit; color: var(--linx-green-dark); text-decoration: underline; cursor: pointer; }
+
+.bandeau { margin: 0 0 16px; padding: 10px 14px; border-left: 3px solid var(--linx-orange); background: #fff; color: #555e63; }
+
+/* Filtres */
+.filtres { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 16px; align-items: end;
+  background: #fff; border: 1px solid var(--linx-border); border-top: 3px solid var(--linx-orange); border-radius: 2px; padding: 16px; margin-bottom: 20px; }
+label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 4px; }
+select { width: 100%; box-sizing: border-box; font: inherit; padding: 9px 11px; border: 1px solid #cfd4d7; border-radius: 2px; background: #fff; }
+
+/* Indicateurs */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.kpi { background: #fff; border: 1px solid var(--linx-border); border-radius: 2px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; color: #5d6b7a; }
+.kpi .val { font-size: 1.8rem; font-weight: 700; color: #1c2a39; }
+.kpi.fort { background: var(--linx-orange); border-color: var(--linx-orange); color: #fff1e5; }
+.kpi.fort .val { color: #fff; }
+
+/* Onglets des états */
+.onglets { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--linx-border); background: #fff; }
+.onglet { font: inherit; padding: 10px 16px; border: 0; border-bottom: 3px solid transparent; background: #fff; color: #5b646a; cursor: pointer; }
+.onglet.actif { border-bottom-color: var(--linx-orange); color: var(--linx-orange-dark); font-weight: 700; }
+.nb { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(0,0,0,.08); font-size: .85rem; }
+
+/* Tableaux */
+.table-wrap { overflow-x: auto; border: 1px solid var(--linx-border); border-radius: 2px; background: #fff; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e3e6e8; vertical-align: top; }
+th { background: #f6f7f8; color: #424a4f; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+small { color: #6b7886; }
+.vide { text-align: center; color: #6b7886; padding: 24px; }
+.retard { color: #b3261e; font-weight: 600; }
+tr.titre td { background: #eef3f0; font-weight: 700; color: var(--linx-green-dark); }
+tr.sous td { background: #e8f4ec; font-weight: 600; }
+tr.total td { background: #fff0dc; font-weight: 700; }
+.indent { padding-left: 32px; }
+
+.badge { padding: 3px 10px; border-radius: 999px; font-size: .85rem; font-weight: 600; white-space: nowrap; }
+.badge.ok { background: #e1f3e8; color: #176f40; }
+.badge.cours { background: #fdf0d6; color: #8a5a00; }
+.badge.non { background: #fbe4e2; color: #b3261e; }
+
+/* Modal des détails */
+dialog { border: 0; padding: 0; border-radius: 4px; width: min(720px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+dialog::backdrop { background: rgba(10, 20, 30, .55); }
+.m-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #e3e9ef; }
+.m-head h3 { margin: 0; color: var(--linx-green-dark); }
+.x { background: none; border: 0; font-size: 1.6rem; cursor: pointer; }
+.m-body { padding: 20px; }
+dl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin: 0; }
+dl .full { grid-column: 1 / -1; }
+dt { font-size: .85rem; font-weight: 600; color: #5d6b7a; }
+dd { margin: 2px 0 0; }
+.m-foot { display: flex; justify-content: flex-end; padding: 0 20px 20px; }
+
+@media (max-width: 560px) { dl { grid-template-columns: 1fr; } }
+
+/* Impression */
+@media print {
+  .filtres, .onglets, .btn, .lien { display: none; }
+  .table-wrap { border: 0; }
+}

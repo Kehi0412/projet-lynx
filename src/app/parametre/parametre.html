@@ -1,105 +1,130 @@
-<div class="page">
-  <div class="banner">
-    <h1>Paramètres</h1>
-    <p>Gestion des années d'exercice, catégories et types de mission</p>
-  </div>
+<nav class="onglets">
+  @for (p of params; track p.id) {
+    <button type="button" class="onglet" [class.actif]="p.id === actifId()" (click)="choisir(p.id)">
+      {{ p.label }}
+    </button>
+  }
+</nav>
 
-  <div class="card">
-    <!-- Onglets -->
-    <div class="tabs">
-      <button
-        *ngFor="let c of configs"
-        type="button"
-        [class.active]="c === active"
-        (click)="select(c)">
-        {{ c.label }}
-      </button>
-      <button type="button" class="btn btn-primary" (click)="openModalWithClass(template)">ajouter</button>
-      <ng-template #template>
-        <div class="modal-header">
-          <h4 class="modal-title pull-left">Modal</h4>
-          <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
-            <span aria-hidden="true" class="visually-hidden">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Just a modal with a bunch of words inside, nothing serious.
-        </div>
-      </ng-template>
-      <br>
-    </div>
+<header class="entete">
+  <h1>{{ actif().label }}</h1>
+  <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
+</header>
 
-    <!-- Formulaire -->
-    <h3 class="form-title">
-      {{ form[active.id] ? 'Modifier' : 'Ajouter' }} : {{ active.label }}
-    </h3>
-    <form class="form" (ngSubmit)="save()">
-      <div class="field" *ngIf="active.upload">
-        <label>Choisir un fichier</label>
-        <input #fileInput type="file" (change)="onFile($event)" />
-      </div>
-      <div class="field" *ngFor="let f of active.fields">
-        <label>{{ f.label }}</label>
-        <input
-          [type]="f.type || 'text'"
-          [(ngModel)]="form[f.name]"
-          [name]="f.name"
-          [placeholder]="f.label"
-          [readOnly]="!!f.readonly"
-          required />
-      </div>
+@if (actif().statut) {
+  <p class="bandeau">
+    Année en cours : <strong>{{ anneeEnCours()?.['Lib_ann'] ?? 'aucune' }}</strong>
+  </p>
+}
 
-      <button type="submit" class="btn-primary">
-        {{ form[active.id] ? 'Modifier' : 'Ajouter' }}
-      </button>
-      <button
-        type="button"
-        class="btn-cancel"
-        *ngIf="form[active.id]"
-        (click)="reset()">
-        Annuler
-      </button>
-    </form>
-
-
-    <!-- Tableau -->
-    <div class="table-wrap">
-    <table>
-      <thead>
-      <tr>
-        <th>Id</th>
-        <th *ngFor="let f of active.fields">{{ f.label }}</th>
-        <th>Créé par</th>
-        <th>Créé le</th>
-        <th>Modifié par</th>
-        <th>Modifié le</th>
-        <th class="center">Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let r of rows">
-        <td>{{ r[active.id] }}</td>
-        <td *ngFor="let f of active.fields">{{ r[f.name] }}</td>
-        <td>{{ r.creer_par || '-' }}</td>
-        <td>{{ r.cree_le ? (r.cree_le | date:'dd/MM/yyyy') : '-' }}</td>
-        <td>{{ r.modifier_par || '-' }}</td>
-        <td>{{ r.modifier_le ? (r.modifier_le | date:'dd/MM/yyyy') : '-' }}</td>
-        <td class="center">
-          <button type="button" class="icon-btn" title="Télécharger"
-                  *ngIf="r.contenu" (click)="download(r)">⬇️</button>
-          <button type="button" class="icon-btn" title="Modifier" (click)="edit(r)">✏️</button>
-          <button type="button" class="icon-btn" title="Supprimer" (click)="remove(r)">🗑️</button>
-        </td>
-      </tr>
-
-      <tr *ngIf="!rows.length">
-        <td class="empty" [attr.colspan]="active.fields.length + 6">
-          Aucune donnée
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>Id</th>
+      @for (c of actif().champs; track c.cle) {
+        <th>{{ c.label }}</th>
+      }
+      @if (actif().statut) {
+        <th>Statut</th>
+      }
+      <th>Créé par</th>
+      <th>Créé le</th>
+      <th>Modifié par</th>
+      <th>Modifié le</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (l of lignes(); track l['id']) {
+        <tr>
+          <td>{{ l['id'] }}</td>
+          @for (c of actif().champs; track c.cle) {
+            <td>
+              @if (c.type === 'select') {
+                {{ libelle(c.source!, l[c.cle]) }}
+              } @else {
+                {{ l[c.cle] || '-' }}
+              }
+            </td>
+          }
+          @if (actif().statut) {
+            <td>
+              @if (l['enCours']) {
+                <span class="badge">En cours</span>
+              } @else {
+                <button type="button" class="lien" (click)="definirEnCours(l['id'])">Définir en cours</button>
+              }
+            </td>
+          }
+          <td>-</td><td>-</td><td>-</td><td>-</td>
+          <td>
+            <button type="button" class="suppr" (click)="supprimer(l['id'])"
+                    [disabled]="l['enCours']"
+                    [attr.title]="l['enCours'] ? 'Impossible de supprimer l\'année en cours' : 'Supprimer'"
+                    aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="actif().champs.length + 6 + (actif().statut ? 1 : 0)" class="vide">
+            Aucun élément dans « {{ actif().label }} ». Cliquez sur « Ajouter ».
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
 </div>
 
+<dialog #modal (click)="clicFond($event)">
+  @if (modalOuvert()) {
+    <div class="m-head">
+      <h2>Ajouter : {{ actif().label }}</h2>
+      <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="enregistrer()">
+      <div class="grid">
+        @for (c of actif().champs; track c.cle) {
+          <div [class.full]="c.pleine">
+            <label [for]="c.cle">{{ c.label }}</label>
+
+            @if (c.type === 'textarea') {
+              <textarea [id]="c.cle" [formControlName]="c.cle"></textarea>
+            } @else if (c.type === 'select') {
+              <select [id]="c.cle" [formControlName]="c.cle">
+                <option value="" disabled>Choisir…</option>
+                @for (o of options(c.source!); track o['id']) {
+                  <option [ngValue]="o['id']">{{ o[libelleCle[c.source!]] }}</option>
+                }
+              </select>
+              @if (options(c.source!).length === 0) {
+                <div class="err">Aucune famille. Ajoutez d'abord une famille.</div>
+              }
+            } @else {
+              <input [id]="c.cle" [formControlName]="c.cle" [type]="c.type === 'date' ? 'date' : 'text'">
+            }
+
+            @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {
+              <div class="err">Ce champ est obligatoire.</div>
+            }
+          </div>
+
+        }
+
+
+        @if (actif().statut) {
+          <label class="case full">
+            <input type="checkbox" formControlName="enCours">
+            Définir comme année en cours
+          </label>
+        }
+      </div>
+
+      <div class="m-foot">
+        <button class="btn" type="button" (click)="fermer()">Annuler</button>
+        <button class="btn primary" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  }
+</dialog>
