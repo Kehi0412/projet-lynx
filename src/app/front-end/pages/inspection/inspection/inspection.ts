@@ -2,7 +2,7 @@ import { Component, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InspectionModel } from '../../../../back-end/models/inspection';
-import { ParametreService } from '../../../../parametre/parametre.service';
+//import { ParametreService } from '../../../../parametre/parametre.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { NgIf } from '@angular/common';
 interface Mission {
@@ -24,7 +24,7 @@ export class Inspection {
   typeChoisi = 'Tous';
   ind!: InspectionModel;
   constructor(
-    private svc: ParametreService,
+    //private svc: ParametreService,
     private modalService: BsModalService,
   ) {}
   modalRef?: BsModalRef;
