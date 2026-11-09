@@ -1,17 +1,34 @@
-<section class="bandeau">
-  <div>
-    <h1>Bienvenue sur LINX</h1>
-    <p>Suivi des missions, inspections et audits du Trésor Public.</p>
-  </div>
-  <div class="filtre">
-    <label>Année</label>
-    <select [(ngModel)]="anneeChoisie">
-      @for (a of annees; track a) {
-        <option [value]="a">{{ a }}</option>
-      }
-    </select>
-  </div>
-</section>
+
+
+<div class="layout">
+  <aside class="menu">
+    <div class="menu-logo">
+      <img src="/img_1.png" alt="Logo">
+      <span>LINX</span>
+    </div>
+    <a class="actif">🏠 Tableau de bord</a>
+    <a>📋 Missions</a>
+    <a>🔍 Inspections</a>
+    <a>📑 Audits</a>
+    <a>📊 Rapports</a>
+    <button (click)="deconnexion()">⎋ Déconnexion</button>
+  </aside>
+
+  <main class="contenu">
+    <section class="bandeau">
+      <div>
+        <h1>Bienvenue sur LINX</h1>
+        <p>Suivi des missions, inspections et audits du Trésor Public.</p>
+      </div>
+      <div class="filtre">
+        <label>Année</label>
+        <select [(ngModel)]="anneeChoisie">
+          @for (a of annees; track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+      </div>
+    </section>
 
 <section class="stats">
   <div class="stat"><span>Audits</span><strong>{{ compter('Audit') }}</strong></div>

@@ -1,6 +1,6 @@
 import { Component, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 interface Mission {
   ref: string;
@@ -21,6 +21,7 @@ export class Accueil {
   annees = [2026, 2025, 2024, 2023];
   anneeChoisie = 2026;
   typeChoisi = 'Tous';
+  afficherAudits:boolean=false;
 
   missions: Mission[] = [
     {
