@@ -1,1 +1,233 @@
-<p>bojour naomi</p>
+<header class="entete">
+  <h1>Rapports et états statistiques</h1>
+  <button class="btn primary" type="button" (click)="imprimer()">Imprimer / PDF</button>
+</header>
+
+<p class="bandeau">Année de gestion en cours : <strong>{{ anneeEnCours }}</strong></p>
+
+<!-- Filtres multicritères -->
+<section class="filtres">
+  <div>
+    <label for="fAnnee">Année de gestion</label>
+    <select id="fAnnee" (change)="setFiltre('annee', $event)">
+      <option value="">Toutes</option>
+      @for (a of annees; track a) {
+        <option [value]="a">{{ a }}{{ a === anneeEnCours ? ' (en cours)' : '' }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="fTri">Trimestre</label>
+    <select id="fTri" (change)="setFiltre('trimestre', $event)">
+      <option value="">Tous</option>
+      <option value="1">1er trimestre</option>
+      <option value="2">2e trimestre</option>
+      <option value="3">3e trimestre</option>
+      <option value="4">4e trimestre</option>
+    </select>
+  </div>
+  <div>
+    <label for="fType">Type de mission</label>
+    <select id="fType" (change)="setFiltre('typeMission', $event)">
+      <option value="">Tous</option>
+      <option value="Inspection">Inspection</option>
+      <option value="Audit">Audit</option>
+    </select>
+  </div>
+  <div>
+    <label for="fProc">Processus</label>
+    <select id="fProc" (change)="setFiltre('processus', $event)">
+      <option value="">Tous</option>
+      @for (p of processus; track p.code) {
+        <option [value]="p.code">{{ p.code }} : {{ p.lib }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="fFam">Famille de recommandation</label>
+    <select id="fFam" (change)="setFiltre('famille', $event)">
+      <option value="">Toutes</option>
+      @for (f of familles; track f) {
+        <option [value]="f">{{ f }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="fIrt">Antenne / Division</label>
+    <select id="fIrt" (change)="setFiltre('irt', $event)">
+      <option value="">Toutes</option>
+      @for (i of irts; track i) {
+        <option [value]="i">{{ i }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="fNiv">Niveau d'exécution</label>
+    <select id="fNiv" (change)="setFiltre('niveau', $event)">
+      <option value="">Tous</option>
+      <option value="Réalisé">Réalisé</option>
+      <option value="En cours">En cours</option>
+      <option value="Non démarré">Non démarré</option>
+    </select>
+  </div>
+  <div>
+    <label for="fEt">Étape de la recommandation</label>
+    <select id="fEt" (change)="setFiltre('etape', $event)">
+      <option value="">Toutes</option>
+      @for (e of etapes; track e) {
+        <option [value]="e">{{ e }}</option>
+      }
+    </select>
+  </div>
+  <div class="reset">
+    <button class="btn" type="button" (click)="reinitialiser()">Réinitialiser</button>
+  </div>
+</section>
+
+<!-- Indicateurs -->
+<section class="kpis">
+  <div class="kpi"><span class="val">{{ total().emises }}</span><span>Émises</span></div>
+  <div class="kpi"><span class="val">{{ total().echues }}</span><span>Échues</span></div>
+  <div class="kpi"><span class="val">{{ total().realisees }}</span><span>Réalisées</span></div>
+  <div class="kpi"><span class="val">{{ total().enCours }}</span><span>En cours</span></div>
+  <div class="kpi"><span class="val">{{ total().nonRealisees }}</span><span>Non réalisées</span></div>
+  <div class="kpi fort"><span class="val">{{ total().taux }} %</span><span>Taux de réalisation</span></div>
+</section>
+
+<!-- États -->
+<nav class="onglets">
+  @for (e of etats; track e.id) {
+    <button type="button" class="onglet" [class.actif]="e.id === etatActif()" (click)="choisirEtat(e.id)">
+      {{ e.label }} <span class="nb">{{ compte(e.id) }}</span>
+    </button>
+  }
+</nav>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>N°</th><th>Mission</th><th>Poste / Service</th><th>Constat</th><th>Recommandation</th>
+      <th>Processus</th><th>Pilote</th><th>Famille</th>
+      <th>Début</th><th>Date butoir</th><th>Attributaire</th>
+      <th>Étape</th><th>Exécution</th><th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (r of vue(); track r.id) {
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.mission }}<br><small>{{ r.typeMission }} · {{ r.annee }}</small></td>
+          <td>{{ r.poste }}</td>
+          <td>{{ r.constat }}</td>
+          <td>{{ r.libelle }}</td>
+          <td>{{ libProc(r.processus) }}</td>
+          <td>{{ r.pilote }}</td>
+          <td>{{ r.famille }}</td>
+          <td>{{ r.dateDebut | date:'dd/MM/yyyy' }}</td>
+          <td [class.retard]="echue(r)">{{ r.dateFin | date:'dd/MM/yyyy' }}</td>
+          <td>{{ r.attributaire }}</td>
+          <td>
+            <span class="badge"
+                  [class.ok]="r.etape === 'Validée'"
+                  [class.cours]="r.etape === 'Exécutée' || r.etape === 'À mettre en œuvre'"
+                  [class.non]="r.etape === 'Rejetée' || r.etape === 'À soumettre'">{{ r.etape }}</span>
+            @if (horsDelai(r)) {
+              <br><small class="retard">Validation hors délai</small>
+            }
+          </td>
+          <td>{{ niveau(r) }}</td>
+          <td><button type="button" class="lien" (click)="voir(r)">Détails</button></td>
+        </tr>
+      } @empty {
+        <tr><td colspan="14" class="vide">Aucune recommandation pour ces critères.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Récapitulatif par antenne (annexe 6) -->
+<h2>Niveau de réalisation par antenne</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>Antenne / Division</th><th>Missions</th><th>Rec. émises</th><th>Rec. échues</th>
+      <th>Rec. réalisées</th><th>Rec. en cours</th><th>Rec. non réalisées</th><th>Taux de réalisation</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (l of lignesIrt(); track $index) {
+        @if (l['type'] === 'titre') {
+          <tr class="titre"><td colspan="8">{{ l['libelle'] }}</td></tr>
+        } @else {
+          <tr [class.sous]="l['type'] === 'sous'" [class.total]="l['type'] === 'total'">
+            <td [class.indent]="l['type'] === 'ligne'">{{ l['libelle'] }}</td>
+            <td>{{ l['missions'] }}</td><td>{{ l['emises'] }}</td><td>{{ l['echues'] }}</td>
+            <td>{{ l['realisees'] }}</td><td>{{ l['enCours'] }}</td><td>{{ l['nonRealisees'] }}</td>
+            <td>{{ l['taux'] }} %</td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Récapitulatif par processus (annexe 7) -->
+<h2>Niveau de réalisation par processus</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>Processus</th><th>Rec. émises</th><th>Rec. échues</th><th>Rec. réalisées</th>
+      <th>Rec. en cours</th><th>Rec. non réalisées</th><th>Taux de réalisation</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (l of lignesProcessus(); track l['libelle']) {
+        <tr [class.sous]="l['type'] === 'sous'" [class.total]="l['type'] === 'total'">
+          <td>{{ l['libelle'] }}</td>
+          <td>{{ l['emises'] }}</td><td>{{ l['echues'] }}</td><td>{{ l['realisees'] }}</td>
+          <td>{{ l['enCours'] }}</td><td>{{ l['nonRealisees'] }}</td><td>{{ l['taux'] }} %</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal : détails d'une recommandation -->
+<dialog #modal (click)="clicFond($event)">
+  <div class="m-head">
+    <h3>Détails de la recommandation {{ detail()?.id }}</h3>
+    <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
+  </div>
+
+  @if (detail(); as d) {
+    <div class="m-body">
+      <dl>
+        <div><dt>Mission</dt><dd>{{ d.mission }} ({{ d.typeMission }}, {{ d.annee }})</dd></div>
+        <div><dt>Poste / Service</dt><dd>{{ d.poste }}</dd></div>
+        <div><dt>Antenne / Division</dt><dd>{{ d.irt }}</dd></div>
+        <div><dt>Localité</dt><dd>{{ d.localite }}</dd></div>
+        <div class="full"><dt>Constat</dt><dd>{{ d.constat }}</dd></div>
+        <div class="full"><dt>Cause du constat</dt><dd>{{ d.cause || '-' }}</dd></div>
+        <div class="full"><dt>Recommandation</dt><dd>{{ d.libelle }}</dd></div>
+        <div class="full"><dt>Objectif</dt><dd>{{ d.objectif || '-' }}</dd></div>
+        <div><dt>Famille</dt><dd>{{ d.famille }}</dd></div>
+        <div><dt>Sous-famille</dt><dd>{{ d.sousFamille }}</dd></div>
+        <div><dt>Processus</dt><dd>{{ libProc(d.processus) }}</dd></div>
+        <div><dt>Pilote</dt><dd>{{ d.pilote }}</dd></div>
+        <div><dt>Attributaire</dt><dd>{{ d.attributaire }}</dd></div>
+        <div><dt>Étape</dt><dd>{{ d.etape }}</dd></div>
+        <div><dt>Date de début</dt><dd>{{ d.dateDebut | date:'dd/MM/yyyy' }}</dd></div>
+        <div><dt>Date butoir</dt><dd>{{ d.dateFin | date:'dd/MM/yyyy' }}</dd></div>
+        <div class="full"><dt>Preuve attendue</dt><dd>{{ d.preuve || '-' }}</dd></div>
+        <div class="full"><dt>Observation</dt><dd>{{ d.observation || '-' }}</dd></div>
+      </dl>
+    </div>
+  }
+
+  <div class="m-foot">
+    <button class="btn" type="button" (click)="fermer()">Fermer</button>
+  </div>
+</dialog>

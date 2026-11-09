@@ -1,37 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {signal} from '@angular/core';
+
+type EtapeConnexion = 'matricule' | 'otp';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports:[FormsModule],
+  imports: [FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
-
 export class LoginComponent {
+  private readonly codeDemo = '123456';
+  private expirationOtp = 0;
+
+  etape = signal<EtapeConnexion>('matricule');
   matricule = '';
-  password = '';
-  erreur=signal('');
-  succes =signal(false);
+  codeOtp = '';
+  erreur = signal('');
+  succes = signal(false);
 
   constructor(private router: Router) {}
 
-  seConnecter() {
+  demanderCode() {
+    if (!this.matricule.trim()) {
+      this.erreur.set('Veuillez saisir votre matricule.');
+      return;
+    }
 
-    if (this.matricule==='123456' && this.password==='tresor') {
-      this.erreur.set('');
-      this.succes.set(true);
-       setTimeout(()=>this.router.navigate(['/accueil']),1500);
-      }  else {
-        this.erreur.set('matricule ou mot de passe incorrect');
-        setTimeout(() => this.erreur.set(''),3000);
-      }
+    this.erreur.set('');
+    this.codeOtp = '';
+    this.expirationOtp = Date.now() + 10 * 60 * 1000;
+    this.etape.set('otp');
+  }
 
+  verifierCode() {
+    if (Date.now() > this.expirationOtp) {
+      this.erreur.set('Le code a expiré. Demandez un nouveau code.');
+      return;
+    }
+
+    if (this.codeOtp !== this.codeDemo) {
+      this.erreur.set('Code de vérification incorrect.');
+      return;
+    }
+
+    this.erreur.set('');
+    this.succes.set(true);
+    setTimeout(() => this.router.navigate(['/accueil']), 1000);
+  }
+
+  renvoyerCode() {
+    this.codeOtp = '';
+    this.erreur.set('');
+    this.expirationOtp = Date.now() + 10 * 60 * 1000;
+  }
+
+  retourAuMatricule() {
+    this.etape.set('matricule');
+    this.codeOtp = '';
+    this.erreur.set('');
   }
 }
-
-
-

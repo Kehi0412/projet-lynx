@@ -13,7 +13,7 @@
 
 @if (actif().statut) {
   <p class="bandeau">
-    Année en cours : <strong>{{ anneeEnCours()?.['Lb_ann'] ?? 'aucune' }}</strong>
+    Année en cours : <strong>{{ anneeEnCours()?.['Lib_ann'] ?? 'aucune' }}</strong>
   </p>
 }
 
@@ -40,7 +40,13 @@
         <tr>
           <td>{{ l['id'] }}</td>
           @for (c of actif().champs; track c.cle) {
-            <td>{{ l[c.cle] || '-' }}</td>
+            <td>
+              @if (c.type === 'select') {
+                {{ libelle(c.source!, l[c.cle]) }}
+              } @else {
+                {{ l[c.cle] || '-' }}
+              }
+            </td>
           }
           @if (actif().statut) {
             <td>
@@ -71,38 +77,54 @@
 </div>
 
 <dialog #modal (click)="clicFond($event)">
-  <div class="m-head">
-    <h2>Ajouter : {{ actif().label }}</h2>
-    <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
-  </div>
-
-  <form [formGroup]="form" (ngSubmit)="enregistrer()">
-    <div class="grid">
-      @for (c of actif().champs; track c.cle) {
-        <div [class.full]="c.pleine">
-          <label [for]="c.cle">{{ c.label }}</label>
-          @if (c.type === 'textarea') {
-            <textarea [id]="c.cle" [formControlName]="c.cle"></textarea>
-          } @else {
-            <input [id]="c.cle" [formControlName]="c.cle" [type]="c.type === 'date' ? 'date' : 'text'">
-          }
-          @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {
-            <div class="err">Ce champ est obligatoire.</div>
-          }
-        </div>
-      }
-
-      @if (actif().statut) {
-        <label class="case full">
-          <input type="checkbox" formControlName="enCours">
-          Définir comme année en cours
-        </label>
-      }
+  @if (modalOuvert()) {
+    <div class="m-head">
+      <h2>Ajouter : {{ actif().label }}</h2>
+      <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
     </div>
 
-    <div class="m-foot">
-      <button class="btn" type="button" (click)="fermer()">Annuler</button>
-      <button class="btn primary" type="submit">Enregistrer</button>
-    </div>
-  </form>
+    <form [formGroup]="form" (ngSubmit)="enregistrer()">
+      <div class="grid">
+        @for (c of actif().champs; track c.cle) {
+          <div [class.full]="c.pleine">
+            <label [for]="c.cle">{{ c.label }}</label>
+
+            @if (c.type === 'textarea') {
+              <textarea [id]="c.cle" [formControlName]="c.cle"></textarea>
+            } @else if (c.type === 'select') {
+              <select [id]="c.cle" [formControlName]="c.cle">
+                <option value="" disabled>Choisir…</option>
+                @for (o of options(c.source!); track o['id']) {
+                  <option [ngValue]="o['id']">{{ o[libelleCle[c.source!]] }}</option>
+                }
+              </select>
+              @if (options(c.source!).length === 0) {
+                <div class="err">Aucune famille. Ajoutez d'abord une famille.</div>
+              }
+            } @else {
+              <input [id]="c.cle" [formControlName]="c.cle" [type]="c.type === 'date' ? 'date' : 'text'">
+            }
+
+            @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {
+              <div class="err">Ce champ est obligatoire.</div>
+            }
+          </div>
+
+        }
+
+
+        @if (actif().statut) {
+          <label class="case full">
+            <input type="checkbox" formControlName="enCours">
+            Définir comme année en cours
+          </label>
+        }
+      </div>
+
+      <div class="m-foot">
+        <button class="btn" type="button" (click)="fermer()">Annuler</button>
+        <button class="btn primary" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  }
 </dialog>

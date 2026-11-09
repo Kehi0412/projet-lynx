@@ -1,5 +1,8 @@
-<header class="entete">
-  <h1>Missions</h1>
+<header class="page-heading">
+  <div>
+    <h1>Missions</h1>
+    <p>Enregistrement et suivi des missions du Trésor public.</p>
+  </div>
   <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
 </header>
 
@@ -7,7 +10,7 @@
   <table>
     <thead>
     <tr>
-      <th>Code</th><th>Début</th><th>Fin</th><th>Localisation</th><th>Chef de poste</th>
+      <th>Code mission</th><th>Date de début</th><th>Date de fin</th><th>Poste / service</th><th>Chef de poste</th>
     </tr>
     </thead>
     <tbody>
@@ -16,7 +19,7 @@
           <td>{{ m.Cod_miss }}</td>
           <td>{{ m.D_db_miss }}</td>
           <td>{{ m.D_fin_miss }}</td>
-          <td>{{ m.Loc_miss }}</td>
+          <td>{{ m.Stru_contr_miss }} — {{ m.Loc_miss }}</td>
           <td>{{ m.Chf_pste_miss }}</td>
         </tr>
       } @empty {

@@ -8,6 +8,9 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
   templateUrl: './main-layouts.html',
 })
 export class MainLayouts {
+  readonly profil = 'ADMINISTRATEUR';
+  readonly poste = 'DIRECTION GÉNÉRALE DU TRÉSOR';
+
   constructor(private router: Router) {}
 
   deconnexion() {
