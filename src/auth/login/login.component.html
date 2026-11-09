@@ -1,43 +1,66 @@
-<div class="login-page">
+<main class="login-page">
+  <section class="login-panel" aria-labelledby="titre-connexion">
+    <div class="login-brand">
+      <img src="/img_1.png" alt="Trésor public">
+      <span class="brand-separator" aria-hidden="true"></span>
+      <span class="brand-name">LINX <small>GESTION DES MISSIONS</small></span>
+    </div>
 
-  <div class="login-box">
-    <img src="/img_1.png" alt="logo Tresor publuc" class="logo">
+    <p class="login-eyebrow">DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE</p>
+    <h1 id="titre-connexion">Authentification</h1>
+    <p class="login-intro">Accédez à votre espace de gestion des missions d’inspection et d’audit.</p>
 
-    <h2>Bienvenue</h2>
-
-    <p>Connectez-vous à Linx</p>
-
-    <form (ngSubmit)=" seConnecter()">
-
-      <label>Matricule</label>
-      <input
-        type="text"
-        [(ngModel)]="matricule"
-        (input)="erreur.set('')"
-        name="matricule"
-        placeholder="matricule(ex:123456)"
-        required
-      >
-      <label>Mot de passe</label>
-      <input
-        type="password"
-        [(ngModel)]="password"
-        name="password"
-        placeholder="Votre mot de passe"
-        required
-      >
-      <button type="submit">Se connecter</button>
-
-    </form>
-
-  </div>
-  <div class="toast-zome">
-    @if (erreur()){
-      <div class="toast toast-erreur">{{erreur()}}</div>
+    @if (etape() === 'matricule') {
+      <form (ngSubmit)="demanderCode()">
+        <label for="matricule">Matricule</label>
+        <input
+          id="matricule"
+          type="text"
+          [(ngModel)]="matricule"
+          (input)="erreur.set('')"
+          name="matricule"
+          placeholder="Exemple : 000888A"
+          autocomplete="username"
+          required
+        >
+        <p class="field-help">Un code de vérification sera envoyé par courriel et SMS.</p>
+        <button class="primary-action" type="submit">Continuer</button>
+      </form>
+    } @else {
+      <form (ngSubmit)="verifierCode()">
+        <div class="otp-heading">
+          <div>
+            <label for="code-otp">Code de vérification (OTP)</label>
+            <p class="field-help">Saisissez le code à 6 chiffres reçu pour le matricule {{ matricule }}.</p>
+          </div>
+          <button class="text-action" type="button" (click)="retourAuMatricule()">Modifier</button>
+        </div>
+        <input
+          id="code-otp"
+          type="text"
+          [(ngModel)]="codeOtp"
+          (input)="erreur.set('')"
+          name="codeOtp"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          pattern="[0-9]{6}"
+          placeholder="••••••"
+          required
+        >
+        <p class="demo-note">Mode démonstration : aucun service SMS/courriel n’est raccordé. Code de test : 123456.</p>
+        <button class="primary-action" type="submit">Connexion</button>
+        <button class="secondary-action" type="button" (click)="renvoyerCode()">Renvoyer le code</button>
+      </form>
     }
-    @if (succes()){
-      <div class="toast toast-succes">Connexion reussie! Redirection...</div>
-    }
-  </div>
 
-</div>
+    @if (erreur()) {
+      <p class="login-message error" role="alert">{{ erreur() }}</p>
+    }
+    @if (succes()) {
+      <p class="login-message success" role="status">Connexion réussie. Ouverture de votre espace…</p>
+    }
+
+    <footer class="login-footer">LINX V2 <span>•</span> Accès réservé aux utilisateurs autorisés</footer>
+  </section>
+</main>

@@ -1,68 +1,89 @@
-
-
-<div class="layout">
-  <aside class="menu">
-    <div class="menu-logo">
-      <img src="/img_1.png" alt="Logo">
-      <span>LINX</span>
-    </div>
-    <a class="actif">🏠 Tableau de bord</a>
-    <a>📋 Missions</a>
-    <a>🔍 Inspections</a>
-    <a>📑 Audits</a>
-    <a>📊 Rapports</a>
-    <button (click)="deconnexion()">⎋ Déconnexion</button>
-  </aside>
-
-  <main class="contenu">
-    <section class="bandeau">
-      <div>
-        <h1>Bienvenue sur LINX</h1>
-        <p>Suivi des missions, inspections et audits du Trésor Public.</p>
-      </div>
-      <div class="filtre">
-        <label>Année</label>
-        <select [(ngModel)]="anneeChoisie">
-          @for (a of annees; track a) {
-            <option [value]="a">{{ a }}</option>
-          }
-        </select>
-      </div>
-    </section>
-
-<section class="stats">
-  <div class="stat"><span>Audits</span><strong>{{ compter('Audit') }}</strong></div>
-  <div class="stat"><span>Inspections</span><strong>{{ compter('Inspection') }}</strong></div>
-  <div class="stat"><span>Missions</span><strong>{{ compter('Mission') }}</strong></div>
-  <div class="stat or"><span>En cours</span><strong>{{ enCours }}</strong></div>
+<section class="dashboard-title">
+  <div>
+    <p class="eyebrow">LINX / ACCUEIL</p>
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Vue d’ensemble des missions d’inspection et d’audit.</p>
+  </div>
+  <label class="year-filter">
+    <span>Année de gestion</span>
+    <select [(ngModel)]="anneeChoisie" aria-label="Année de gestion">
+      @for (a of annees; track a) {
+        <option [value]="a">{{ a }}</option>
+      }
+    </select>
+  </label>
 </section>
 
-<section class="tableau">
-  <div class="tableau-haut">
-    <h2>Activités {{ anneeChoisie }}</h2>
-    <select [(ngModel)]="typeChoisi">
-      <option>Tous</option>
-      <option>Audit</option>
-      <option>Inspection</option>
-      <option>Mission</option>
-    </select>
+<section class="dashboard-stats" aria-label="Statistiques des missions">
+  <article class="dashboard-stat cyan">
+    <span>Missions</span>
+    <strong>{{ totalMissions }}</strong>
+    <small>Année {{ anneeChoisie }}</small>
+  </article>
+  <article class="dashboard-stat slate">
+    <span>Audits</span>
+    <strong>{{ compter('Audit') }}</strong>
+    <small>Missions d’audit</small>
+  </article>
+  <article class="dashboard-stat blue">
+    <span>Inspections</span>
+    <strong>{{ compter('Inspection') }}</strong>
+    <small>Missions d’inspection</small>
+  </article>
+  <article class="dashboard-stat orange">
+    <span>En cours</span>
+    <strong>{{ enCours }}</strong>
+    <small>Activités en exécution</small>
+  </article>
+  <article class="dashboard-stat purple">
+    <span>Planifiées</span>
+    <strong>{{ compterStatut('Planifiée') }}</strong>
+    <small>À démarrer</small>
+  </article>
+  <article class="dashboard-stat gray">
+    <span>Terminées</span>
+    <strong>{{ compterStatut('Terminée') }}</strong>
+    <small>Activités clôturées</small>
+  </article>
+</section>
+
+<section class="dashboard-panel">
+  <div class="panel-heading">
+    <div>
+      <h2>Activités de l’année {{ anneeChoisie }}</h2>
+      <p>Consultez les missions enregistrées et filtrez par type.</p>
+    </div>
+    <label class="type-filter">
+      <span>Type de mission</span>
+      <select [(ngModel)]="typeChoisi" aria-label="Filtrer par type de mission">
+        <option value="Tous">Tous les types</option>
+        <option value="Audit">Audit</option>
+        <option value="Inspection">Inspection</option>
+        <option value="Mission">Mission</option>
+      </select>
+    </label>
   </div>
 
-  <div class="defile">
+  <div class="table-wrap">
     <table>
       <thead>
-      <tr><th>Réf.</th><th>Type</th><th>Structure</th><th>Statut</th></tr>
+        <tr><th>Référence</th><th>Type</th><th>Structure contrôlée</th><th>Statut</th></tr>
       </thead>
       <tbody>
         @for (m of missionsFiltrees; track m.ref) {
           <tr>
-            <td>{{ m.ref }}</td>
+            <td class="reference">{{ m.ref }}</td>
             <td>{{ m.type }}</td>
             <td>{{ m.structure }}</td>
-            <td><span class="badge" [class]="'badge ' + (m.statut === 'En cours' ? 'cours' : m.statut === 'Terminée' ? 'fini' : 'prevu')">{{ m.statut }}</span></td>
+            <td>
+              <span class="badge"
+                    [class.cours]="m.statut === 'En cours'"
+                    [class.prevu]="m.statut === 'Planifiée'"
+                    [class.fini]="m.statut === 'Terminée'">{{ m.statut }}</span>
+            </td>
           </tr>
         } @empty {
-          <tr><td colspan="4">Aucune activité pour cette sélection.</td></tr>
+          <tr><td colspan="4" class="vide">Aucune activité pour cette sélection.</td></tr>
         }
       </tbody>
     </table>

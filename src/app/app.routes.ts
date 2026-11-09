@@ -6,8 +6,7 @@ import { AuthLayouts } from './front-end/layouts/auth-layouts/auth-layouts';
 import { MainLayouts } from './front-end/layouts/main-layouts/main-layouts';
 import { Missions } from './front-end/pages/missions/missions';
 import { Inspection } from './front-end/pages/inspection/inspection/inspection';
-import {Audits} from './audits/audits';
-
+import { Rapport } from './front-end/pages/rapports/rapport/rapport';
 
 export const routes: Routes = [
   {
@@ -27,9 +26,7 @@ export const routes: Routes = [
       { path: 'parametres', component: Parametre },
       { path: 'mission', component: Missions },
       { path: 'inspection', component: Inspection },
-      { path: 'audits', component:Audits}
-
-
+      { path: 'rapport', component: Rapport },
     ],
   },
 ];

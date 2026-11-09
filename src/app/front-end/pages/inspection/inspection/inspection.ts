@@ -1,90 +1,128 @@
-import { Component, TemplateRef } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { InspectionModel } from '../../../../back-end/models/inspection';
-//import { ParametreService } from '../../../../parametre/parametre.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { NgIf } from '@angular/common';
-interface Mission {
-  ref: string;
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+
+interface InspectionRecord {
+  id: number;
+  reference: string;
   annee: number;
-  type: 'Audit' | 'Inspection' | 'Mission';
-  structure: string;
+  poste: string;
+  chefMission: string;
+  dateDebut: string;
+  dateFin: string;
   statut: 'En cours' | 'Terminée' | 'Planifiée';
 }
+
 @Component({
-  imports: [ReactiveFormsModule, FormsModule, NgIf],
+  imports: [DatePipe, FormsModule],
   selector: 'app-inspection',
   styleUrl: './inspection.css',
   templateUrl: './inspection.html',
 })
 export class Inspection {
-  annees = [2026, 2025, 2024, 2023];
+  readonly annees = [2026, 2025, 2024, 2023];
   anneeChoisie = 2026;
-  typeChoisi = 'Tous';
-  ind!: InspectionModel;
-  constructor(
-    //private svc: ParametreService,
-    private modalService: BsModalService,
-  ) {}
-  modalRef?: BsModalRef;
+  recherche = '';
+  modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
 
-  openModalWithClass(template: TemplateRef<void>) {
-    this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
-  }
-  missions: Mission[] = [
+  readonly inspections = signal<InspectionRecord[]>([
     {
-      ref: 'M-001',
+      id: 1,
+      reference: 'INS-2026-001',
       annee: 2026,
-      type: 'Audit',
-      structure: 'Trésorerie générale',
+      poste: 'Trésorerie générale de Bouaké',
+      chefMission: 'Chef de mission',
+      dateDebut: '2026-06-01',
+      dateFin: '2026-09-30',
       statut: 'En cours',
     },
     {
-      ref: 'M-002',
+      id: 2,
+      reference: 'INS-2026-002',
       annee: 2026,
-      type: 'Inspection',
-      structure: 'Recette des finances',
+      poste: 'Recette des finances',
+      chefMission: 'Équipe d’inspection',
+      dateDebut: '2026-10-12',
+      dateFin: '2026-10-23',
       statut: 'Planifiée',
     },
-    { ref: 'M-003', annee: 2026, type: 'Mission', structure: 'Paierie', statut: 'Terminée' },
     {
-      ref: 'M-004',
+      id: 3,
+      reference: 'INS-2025-006',
       annee: 2025,
-      type: 'Audit',
-      structure: 'Direction régionale',
+      poste: 'Direction régionale',
+      chefMission: 'Chef de mission',
+      dateDebut: '2025-03-10',
+      dateFin: '2025-04-04',
       statut: 'Terminée',
     },
-    {
-      ref: 'M-005',
-      annee: 2025,
-      type: 'Inspection',
-      structure: 'Trésorerie générale',
-      statut: 'Terminée',
-    },
-    {
-      ref: 'M-006',
-      annee: 2024,
-      type: 'Mission',
-      structure: 'Recette des finances',
-      statut: 'Terminée',
-    },
-  ];
+  ]);
 
-  get missionsFiltrees(): Mission[] {
-    return this.missions.filter(
-      (m) =>
-        m.annee === +this.anneeChoisie &&
-        (this.typeChoisi === 'Tous' || m.type === this.typeChoisi),
+  nouvelleInspection = this.formulaireVide();
+  erreurDate = signal('');
+
+  get inspectionsFiltrees(): InspectionRecord[] {
+    const recherche = this.recherche.trim().toLocaleLowerCase();
+    return this.inspections().filter(
+      (inspection) =>
+        inspection.annee === Number(this.anneeChoisie) &&
+        (!recherche ||
+          inspection.reference.toLocaleLowerCase().includes(recherche) ||
+          inspection.poste.toLocaleLowerCase().includes(recherche)),
     );
   }
 
-  compter(type: string): number {
-    return this.missions.filter((m) => m.annee === +this.anneeChoisie && m.type === type).length;
+  ouvrir() {
+    this.nouvelleInspection = this.formulaireVide();
+    this.erreurDate.set('');
+    this.modal().nativeElement.showModal();
   }
 
-  get enCours(): number {
-    return this.missions.filter((m) => m.annee === +this.anneeChoisie && m.statut === 'En cours')
-      .length;
+  fermer() {
+    this.modal().nativeElement.close();
+  }
+
+  enregistrer(formulaire: NgForm) {
+    if (formulaire.invalid) {
+      formulaire.form.markAllAsTouched();
+      return;
+    }
+
+    if (this.nouvelleInspection.dateFin < this.nouvelleInspection.dateDebut) {
+      this.erreurDate.set('La date de fin doit être postérieure à la date de début.');
+      return;
+    }
+
+    const id = Math.max(0, ...this.inspections().map((inspection) => inspection.id)) + 1;
+    this.inspections.update((inspections) => [
+      ...inspections,
+      {
+        id,
+        ...this.nouvelleInspection,
+        annee: new Date(this.nouvelleInspection.dateDebut).getFullYear(),
+        statut: 'Planifiée',
+      },
+    ]);
+    this.anneeChoisie = new Date(this.nouvelleInspection.dateDebut).getFullYear();
+    this.fermer();
+  }
+
+  supprimer(id: number) {
+    if (!window.confirm('Confirmer la suppression de cette mission d’inspection ?')) return;
+    this.inspections.update((inspections) => inspections.filter((inspection) => inspection.id !== id));
+  }
+
+  clicFond(event: MouseEvent) {
+    if (event.target === this.modal().nativeElement) this.fermer();
+  }
+
+  private formulaireVide() {
+    return {
+      reference: '',
+      poste: '',
+      chefMission: '',
+      dateDebut: '',
+      dateFin: '',
+    };
   }
 }

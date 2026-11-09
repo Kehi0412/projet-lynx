@@ -1,23 +1,54 @@
+<header class="topbar">
+  <a class="brand" routerLink="/accueil" aria-label="LINX - Tableau de bord">
+    <img src="/img_1.png" alt="">
+    <span class="brand-title">LINX<small>GESTION DES MISSIONS</small></span>
+  </a>
+  <div class="topbar-poste">{{ poste }}</div>
+  <div class="topbar-user">
+    <span class="user-avatar" aria-hidden="true">AD</span>
+    <span><strong>Administrateur</strong><small>Profil {{ profil }}</small></span>
+    <button type="button" class="logout-icon" (click)="deconnexion()" aria-label="Déconnexion" title="Déconnexion">
+      ⏻
+    </button>
+  </div>
+</header>
 
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="profile-label">PROFIL {{ profil }}</div>
+    <nav aria-label="Navigation principale">
+      <a routerLink="/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="nav-icon" aria-hidden="true">⌂</span> Tableau de bord
+      </a>
 
-<div class="layout">
-  <aside class="menu">
-    <div class="menu-logo">
-      <img src="/img_1.png" alt="Logo">
-      <span>LINX</span>
-    </div>
-    <a class="actif" routerLink="accueil">🏠 Tableau de bord</a>
-    <a routerLink="mission" routerLinkActive="routerLinkActive">📋 Missions</a>
-    <a routerLink="inspection">🔍 Inspections</a>
-    <a routerLink="audits">📑 Audits</a>
-    <a>📊 Rapports</a>
+      <p class="nav-section">GESTION DES MISSIONS</p>
+      <a routerLink="/mission" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">▣</span> Missions
+      </a>
+      <a routerLink="/inspection" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">✓</span> Inspections
+      </a>
+      <a routerLink="/rapport" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">▤</span> Rapports et statistiques
+      </a>
 
-    <a routerLink="/parametres">⚙️ Paramètres</a>
-    <button (click)="deconnexion()">⎋ Déconnexion</button>
-
+      <p class="nav-section">ADMINISTRATION</p>
+      <a routerLink="/parametres" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">⚙</span> Paramètres
+      </a>
+    </nav>
+    <button type="button" class="logout-button" (click)="deconnexion()">Déconnexion</button>
   </aside>
 
-  <main class="contenu">
-<router-outlet/>
+  <main class="main-content">
+    <div class="breadcrumb">
+      <a routerLink="/accueil" aria-label="Accueil">⌂</a>
+      <span aria-hidden="true">›</span>
+      <span>LINX</span>
+    </div>
+    <div class="page-content">
+      <router-outlet />
+    </div>
+    <footer class="app-footer">LINX V2 <span>•</span> Système de gestion des missions d’inspection et d’audit</footer>
   </main>
 </div>
