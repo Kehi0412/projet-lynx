@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 
 interface Mission {
   ref: string;
@@ -9,10 +10,12 @@ interface Mission {
   statut: 'En cours' | 'Terminée' | 'Planifiée';
 }
 
+let FormsModul;
+
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,RouterLink],
   templateUrl: './accueil.html',
   styleUrl: './accueil.css',
 })
@@ -84,4 +87,6 @@ export class Accueil {
     return this.missions.filter((m) => m.annee === +this.anneeChoisie && m.statut === 'En cours')
       .length;
   }
+
+
 }

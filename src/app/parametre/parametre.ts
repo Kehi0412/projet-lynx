@@ -113,6 +113,7 @@ export class Parametre {
     annee: [
       { id: 1, Lib_ann: '2026', Thm_ann: 'Exercice 2026', enCours: false },
       { id: 2, Lib_ann: '2027', Thm_ann: 'Exercice 2027', enCours: true },
+      { id: 3, lib_ann:'2028' ,Thm_ann:'Exercice 2028', enCours:true }
     ],
     categorie: [],
     type: [],

@@ -7,6 +7,7 @@ import { MainLayouts } from './front-end/layouts/main-layouts/main-layouts';
 import { Missions } from './front-end/pages/missions/missions';
 import { Inspection } from './front-end/pages/inspection/inspection/inspection';
 import { Rapport } from './front-end/pages/rapports/rapport/rapport';
+import { Audits} from './audits/audits';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'mission', component: Missions },
       { path: 'inspection', component: Inspection },
       { path: 'rapport', component: Rapport },
+       { path: 'audits', component: Audits },
     ],
   },
 ];
