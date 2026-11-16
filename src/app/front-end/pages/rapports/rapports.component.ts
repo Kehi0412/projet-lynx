@@ -553,4 +553,5 @@ export class Rapport {
     out.push({ type: 'total', libelle: 'TOTAL GÉNÉRAL', ...this.stats(l) });
     return out;
   });
+  protected a: any;
 }
