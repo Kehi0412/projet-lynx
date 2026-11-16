@@ -2,6 +2,6 @@ export const  environment: any = {
   production: false,
   dev: true,
 
-  urlServerApi: 'http://localhost:8080'
+  urlServerApi: 'http://192.168.137.217:8080'
 
 }

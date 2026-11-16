@@ -100,7 +100,7 @@ export class LoginComponent {
         this.storage.setItem('userData', JSON.stringify(res));
         this.erreur.set('');
         this.succes.set(true);
-        setTimeout(() => this.router.navigate(['/home/tableaudebord']), 1500);
+        setTimeout(() => this.router.navigate(['/home/accueil']), );
       },
       error: (error: any) => {
         this.isLoading = false;

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+
 
 interface Mission {
   ref: string;
@@ -15,7 +15,7 @@ let FormsModul;
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [FormsModule,RouterLink],
+  imports: [FormsModule],
   templateUrl: './accueil.html',
   styleUrl: './accueil.css',
 })

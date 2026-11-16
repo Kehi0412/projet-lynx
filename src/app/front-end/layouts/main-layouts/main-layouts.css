@@ -303,3 +303,11 @@
     padding: 16px 12px 22px;
   }
 }
+
+/* Style du lien actif dans le menu */
+a.active, .menu-item.active {
+  background-color: #f26522 !important; /* Couleur orange de votre thème */
+  color: white !important;
+  font-weight: bold;
+  border-radius: 4px;
+}

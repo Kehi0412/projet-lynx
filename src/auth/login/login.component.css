@@ -1,3 +1,4 @@
+
 :host {
   display: block;
   min-height: 100vh;
@@ -9,17 +10,23 @@
   place-items: center;
   padding: 32px 20px;
   background:
-    linear-gradient(120deg, rgb(29 44 38 / 68%), rgb(29 44 38 / 30%)),
+    linear-gradient(
+      90deg,
+      rgb(245 130 32 / 72%) 0%,
+      rgb(255 255 255 / 38%) 50%,
+      rgb(0 154 68 / 72%) 100%
+    ),
     url('/assets/images/direction-generale-image.jpg') center / cover no-repeat;
 }
 
 .login-panel {
-  width: min(100%, 500px);
+  width: min(300%, 500px);
   padding: 36px 42px 24px;
   border-top: 6px solid var(--linx-orange);
   border-radius: 4px;
   background: #fff;
   box-shadow: 0 18px 55px rgb(22 35 29 / 25%);
+
 }
 
 .login-brand {
@@ -170,4 +177,47 @@
   .login-panel {
     padding: 28px 22px 20px;
   }
+}
+
+.actif {
+  background: #006633;
+  box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.3);
+}
+
+@keyframes tourne {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.toast-zone {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 320px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  animation: entree .35s ease;
+}
+
+.toast-erreur {
+  color: #a52a1d;
+  border-left: 5px solid #c0392b;
+}
+
+.toast-succes {
+  color: #146c3b;
+  border-left: 5px solid #00a651;
 }

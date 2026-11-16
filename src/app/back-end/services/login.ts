@@ -8,7 +8,7 @@ export class Login {
   private apiService = inject(ApiService);
 
   login(data: any): Observable<any> {
-    return this.apiService._post(`addTypeInformation`, data).pipe(
+    return this.apiService._post(`api/auth/login`, data).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );

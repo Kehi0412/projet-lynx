@@ -5,8 +5,8 @@ import { Parametre } from './parametre/parametre';
 import { AuthLayouts } from './front-end/layouts/auth-layouts/auth-layouts';
 import { MainLayouts } from './front-end/layouts/main-layouts/main-layouts';
 import { Missions } from './front-end/pages/missions/missions';
-import { Inspection } from './front-end/pages/inspection/inspection/inspection';
-import { Rapport } from './front-end/pages/rapports/rapport/rapport';
+import { Inspection } from './front-end/pages/inspection/inspection.component';
+import { Rapport } from './front-end/pages/rapports/rapports.component';
 import { Audits} from './audits/audits';
 
 export const routes: Routes = [
@@ -19,7 +19,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: '',
+    path: 'home',
     component: MainLayouts,
     children: [
       { path: '', component: Accueil },
@@ -28,7 +28,7 @@ export const routes: Routes = [
       { path: 'mission', component: Missions },
       { path: 'inspection', component: Inspection },
       { path: 'rapport', component: Rapport },
-       { path: 'audits', component: Audits },
+      { path: 'audits', component: Audits },
     ],
   },
 ];
