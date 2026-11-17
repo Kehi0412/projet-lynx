@@ -58,7 +58,9 @@
             </td>
           }
           <td>-</td><td>-</td><td>-</td><td>-</td>
-          <td>
+          <td class="actions">
+            <button type="button" class="modif" (click)="ouvrir(l)"
+                    title="Modifier" aria-label="Modifier">✏️</button>
             <button type="button" class="suppr" (click)="supprimer(l['id'])"
                     [disabled]="l['enCours']"
                     [attr.title]="l['enCours'] ? 'Impossible de supprimer l\'année en cours' : 'Supprimer'"
@@ -79,7 +81,7 @@
 <dialog #modal (click)="clicFond($event)">
   @if (modalOuvert()) {
     <div class="m-head">
-      <h2>Ajouter : {{ actif().label }}</h2>
+      <h2>{{ modeEdition() ? 'Modifier' : 'Ajouter' }} : {{ actif().label }}</h2>
       <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
     </div>
 
@@ -109,9 +111,7 @@
               <div class="err">Ce champ est obligatoire.</div>
             }
           </div>
-
         }
-
 
         @if (actif().statut) {
           <label class="case full">
@@ -123,7 +123,9 @@
 
       <div class="m-foot">
         <button class="btn" type="button" (click)="fermer()">Annuler</button>
-        <button class="btn primary" type="submit">Enregistrer</button>
+        <button class="btn primary" type="submit">
+          {{ modeEdition() ? 'Mettre à jour' : 'Enregistrer' }}
+        </button>
       </div>
     </form>
   }

@@ -1,5 +1,6 @@
-import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AnneeExerciceService } from '../back-end/services/parametre/anneeExercice.service';
 
 interface Champ {
   cle: string;
@@ -99,22 +100,23 @@ const PARAMS: Param[] = [
   templateUrl: './parametre.html',
   styleUrl: './parametre.css',
 })
-export class Parametre {
+export class Parametre implements OnInit {
   private fb = inject(FormBuilder);
+  private anneeService = inject(AnneeExerciceService);
 
   params = PARAMS;
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
   modalOuvert = signal(false);
 
+  // id de la ligne en cours de modification (null = mode ajout)
+  editId = signal<number | null>(null);
+  modeEdition = computed(() => this.editId() !== null);
+
   actifId = signal('annee');
   actif = computed(() => this.params.find(p => p.id === this.actifId())!);
 
   donnees = signal<Record<string, Ligne[]>>({
-    annee: [
-      { id: 1, Lib_ann: '2026', Thm_ann: 'Exercice 2026', enCours: false },
-      { id: 2, Lib_ann: '2027', Thm_ann: 'Exercice 2027', enCours: true },
-      { id: 3, lib_ann:'2028' ,Thm_ann:'Exercice 2028', enCours:true }
-    ],
+    annee: [], // rempli par l'API
     categorie: [],
     type: [],
     agent: [],
@@ -129,6 +131,25 @@ export class Parametre {
 
   // Colonne affichée pour chaque liste déroulante liée
   libelleCle: Record<string, string> = { famille: 'Lib_fam' };
+
+  ngOnInit() {
+    this.chargerAnnees();
+  }
+
+  // ---------- API : années d'exercice ----------
+
+  chargerAnnees() {
+    this.anneeService.getAllAnnees().subscribe({
+      next: (data: any) => {
+        console.log('Réponse API annees :', data); // pour vérifier la forme
+        const liste = Array.isArray(data) ? data : (data?.content ?? data?.data ?? []);
+        this.donnees.update(d => ({ ...d, annee: liste }));
+      },
+      error: err => console.error('Erreur chargement années', err),
+    });
+  }
+
+  // ---------- Utilitaires ----------
 
   typeDe(c: Champ): string {
     return c.type ?? 'text';
@@ -147,14 +168,18 @@ export class Parametre {
     this.actifId.set(id);
   }
 
-  ouvrir() {
+  // ---------- Modale ----------
+
+  // ligne absente = ajout ; ligne fournie = modification
+  ouvrir(ligne?: Ligne) {
     const p = this.actif();
     const controles: Record<string, any> = {};
     for (const c of p.champs) {
-      controles[c.cle] = ['', c.requis ? Validators.required : []];
+      controles[c.cle] = [ligne?.[c.cle] ?? '', c.requis ? Validators.required : []];
     }
-    if (p.statut) controles['enCours'] = [false];
+    if (p.statut) controles['enCours'] = [ligne?.['enCours'] ?? false];
     this.form = this.fb.group(controles);
+    this.editId.set(ligne ? Number(ligne['id']) : null);
     this.modalOuvert.set(true);
     this.modal().nativeElement.showModal();
   }
@@ -162,11 +187,14 @@ export class Parametre {
   fermer() {
     this.modal().nativeElement.close();
     this.modalOuvert.set(false);
+    this.editId.set(null);
   }
 
   clicFond(e: MouseEvent) {
     if (e.target === this.modal().nativeElement) this.fermer();
   }
+
+  // ---------- Enregistrer (ajout ou modification) ----------
 
   enregistrer() {
     if (this.form.invalid) {
@@ -175,18 +203,40 @@ export class Parametre {
     }
     const id = this.actifId();
     const valeurs = this.form.getRawValue();
+    const editId = this.editId();
+
+    // Année d'exercice : on passe par l'API
+    if (id === 'annee') {
+      const requete =
+        editId !== null
+          ? this.anneeService.updateAnnee(editId, valeurs)
+          : this.anneeService.createAnnee(valeurs);
+
+      requete.subscribe({
+        next: () => {
+          this.chargerAnnees();
+          this.fermer();
+        },
+        error: err => console.error('Erreur enregistrement année', err),
+      });
+      return;
+    }
+
+    // Les autres onglets restent en local pour l'instant
     this.donnees.update(d => {
       let liste = d[id];
-      const nouvelId = liste.length ? Math.max(...liste.map(l => Number(l['id']))) + 1 : 1;
-      // une seule année en cours à la fois
-      if (this.actif().statut && valeurs['enCours']) {
-        liste = liste.map(l => ({ ...l, enCours: false }));
+
+      if (editId !== null) {
+        return { ...d, [id]: liste.map(l => (l['id'] === editId ? { ...l, ...valeurs } : l)) };
       }
+
+      const nouvelId = liste.length ? Math.max(...liste.map(l => Number(l['id']))) + 1 : 1;
       return { ...d, [id]: [...liste, { id: nouvelId, ...valeurs }] };
     });
     this.fermer();
   }
 
+  // Pour l'instant uniquement à l'écran (pas encore enregistré en base)
   definirEnCours(ligneId: number) {
     this.donnees.update(d => ({
       ...d,
@@ -194,8 +244,21 @@ export class Parametre {
     }));
   }
 
+  // ---------- Suppression ----------
+
   supprimer(ligneId: number) {
+    if (!confirm('Voulez-vous vraiment supprimer cet élément ?')) return;
+
     const id = this.actifId();
+
+    if (id === 'annee') {
+      this.anneeService.deleteAnnee(ligneId).subscribe({
+        next: () => this.chargerAnnees(),
+        error: err => console.error('Erreur suppression année', err),
+      });
+      return;
+    }
+
     this.donnees.update(d => ({ ...d, [id]: d[id].filter(l => l['id'] !== ligneId) }));
   }
 }
