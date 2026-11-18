@@ -37,9 +37,25 @@
       </a>
 
       <p class="nav-section">ADMINISTRATION</p>
-      <a routerLink="/home/parametres" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">⚙️</span> Paramètres
-      </a>
+      <div class="parametres-nav">
+        <a routerLink="/home/parametres" routerLinkActive="active" (click)="basculerParametres()"
+           [attr.aria-expanded]="parametresOuverts()">
+          <span class="nav-icon" aria-hidden="true">⚙️</span> Paramètres
+          <span class="nav-chevron" [class.ouvert]="parametresOuverts()" aria-hidden="true">▾</span>
+        </a>
+        @if (parametresOuverts()) {
+          <ul class="parametres-liste">
+            @for (parametre of parametres; track parametre.id) {
+              <li>
+                <button type="button" [class.actif]="parametre.id === moduleActif()"
+                        (click)="choisirParametre(parametre.id)">
+                  {{ parametre.label }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
     </nav>
     <button type="button" class="logout-button" (click)="deconnexion()">Déconnexion</button>
   </aside>

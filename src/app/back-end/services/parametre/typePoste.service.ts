@@ -51,13 +51,19 @@ export class TypePosteService {
     return throwError(errMsg);
   }
 
-  getAllTypePostes() {}
+  getAllTypePostes(): Observable<any> {
+    return this.getAll();
+  }
 
-  createTypePoste() {}
+  createTypePoste(data: any): Observable<any> {
+    return this.create(data);
+  }
 
-  updateTypePoste() {}
+  updateTypePoste(id: any, data: any): Observable<any> {
+    return this.update(id, data);
+  }
 
-  deleteTypePoste()  {
-
+  deleteTypePoste(id: any): Observable<any> {
+    return this.delete(id);
   }
 }
