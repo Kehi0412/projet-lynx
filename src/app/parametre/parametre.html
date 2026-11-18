@@ -1,11 +1,3 @@
-<nav class="onglets">
-  @for (p of params; track p.id) {
-    <button type="button" class="onglet" [class.actif]="p.id === actifId()" (click)="choisir(p.id)">
-      {{ p.label }}
-    </button>
-  }
-</nav>
-
 <header class="entete">
   <h1>{{ actif().label }}</h1>
   <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
@@ -28,10 +20,7 @@
       @if (actif().statut) {
         <th>Statut</th>
       }
-      <th>Créé par</th>
-      <th>Créé le</th>
-      <th>Modifié par</th>
-      <th>Modifié le</th>
+
       <th>Actions</th>
     </tr>
     </thead>
@@ -43,6 +32,8 @@
             <td>
               @if (c.type === 'select') {
                 {{ libelle(c.source!, l[c.cle]) }}
+              } @else if (c.type === 'password') {
+                ••••••
               } @else {
                 {{ l[c.cle] || '-' }}
               }
@@ -104,7 +95,8 @@
                 <div class="err">Aucune famille. Ajoutez d'abord une famille.</div>
               }
             } @else {
-              <input [id]="c.cle" [formControlName]="c.cle" [type]="c.type === 'date' ? 'date' : 'text'">
+              <input [id]="c.cle" [formControlName]="c.cle"
+                     [type]="c.type === 'date' ? 'date' : c.type === 'password' ? 'password' : 'text'">
             }
 
             @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {

@@ -130,7 +130,8 @@
   overflow-y: auto;
 }
 
-.sidebar nav > a {
+.sidebar nav > a,
+.parametres-nav > a {
   display: flex;
   min-height: 40px;
   align-items: center;
@@ -142,7 +143,8 @@
   text-decoration: none;
 }
 
-.sidebar nav > a:hover {
+.sidebar nav > a:hover,
+.parametres-nav > a:hover {
   background: #f4f5f5;
   color: var(--linx-orange-dark);
 }
