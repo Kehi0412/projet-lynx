@@ -72,7 +72,7 @@ export class ApiService {
           }
         } catch {}
       }
-      return this.http.post(`${this.urlRessource}/${endpoint}`, body, { headers: authHeaders, ...rest });
+      return this.http.post(`${this.urlRessource}${endpoint}`, body, { headers: authHeaders, ...rest });
     }
 
     return this.http.post(`${this.urlRessource}/${endpoint}`, body, options);
