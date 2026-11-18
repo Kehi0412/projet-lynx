@@ -1,6 +1,11 @@
 import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { AnneeExerciceService } from '../back-end/services/parametre/anneeExercice.service';
+import { FamilleService } from '../back-end/services/parametre/famille.service';
+import { PosteService } from '../back-end/services/parametre/poste.service';
+import { ProcessusService } from '../back-end/services/parametre/processus.service';
+import { RecomandationService } from '../back-end/services/parametre/recomandation.service';
 import { TypeMissionService } from '../back-end/services/parametre/typeMission.service';
 import { TypePosteService } from '../back-end/services/parametre/typePoste.service';
 interface Champ {
@@ -21,7 +26,7 @@ interface Param {
 
 type Ligne = Record<string, any>;
 
-const PARAMS: Param[] = [
+export const PARAMS: Param[] = [
   {
     // entité annee : Lib_ann, Thm_ann
     id: 'annee',
@@ -57,6 +62,22 @@ const PARAMS: Param[] = [
       { cle: 'matricule', label: 'Matricule', requis: true },
       { cle: 'motDePasse', label: 'Mot de passe', type: 'password', requis: true },
       { cle: 'dateNaissance', label: 'Date de naissance', type: 'date', requis: true },
+    ],
+  },
+  {
+    id: 'poste',
+    label: 'Poste',
+    champs: [
+      { cle: 'codePoste', label: 'Code', requis: true },
+      { cle: 'libellePoste', label: 'Libellé', requis: true },
+    ],
+  },
+  {
+    id: 'processus',
+    label: 'Processus',
+    champs: [
+      { cle: 'codeProcessus', label: 'Code', requis: true },
+      { cle: 'libelleProcessus', label: 'Libellé', requis: true },
     ],
   },
   {
@@ -114,7 +135,12 @@ const PARAMS: Param[] = [
 })
 export class Parametre implements OnInit {
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private anneeService = inject(AnneeExerciceService);
+  private familleService = inject(FamilleService);
+  private posteService = inject(PosteService);
+  private processusService = inject(ProcessusService);
+  private recommandationService = inject(RecomandationService);
   private typeMissionService = inject(TypeMissionService);
   private typePosteService = inject(TypePosteService);
 
@@ -142,15 +168,40 @@ export class Parametre implements OnInit {
     },
     typeposte: {
       getAll: () => this.typePosteService.getAllTypePostes(),
-      create: (d) => this.typePosteService.createTypePoste(),
-      update: (id, d) => this.typePosteService.updateTypePoste(),
-      delete: (id) => this.typePosteService.deleteTypePoste(),
+      create: (d) => this.typePosteService.createTypePoste(d),
+      update: (id, d) => this.typePosteService.updateTypePoste(id, d),
+      delete: (id) => this.typePosteService.deleteTypePoste(id),
+    },
+    poste: {
+      getAll: () => this.posteService.getAll(),
+      create: (d) => this.posteService.create(d),
+      update: (id, d) => this.posteService.update(id, d),
+      delete: (id) => this.posteService.delete(id),
+    },
+    processus: {
+      getAll: () => this.processusService.getAll(),
+      create: (d) => this.processusService.create(d),
+      update: (id, d) => this.processusService.update(id, d),
+      delete: (id) => this.processusService.delete(id),
+    },
+    famille: {
+      getAll: () => this.familleService.getAll(),
+      create: (d) => this.familleService.create(d),
+      update: (id, d) => this.familleService.update(id, d),
+      delete: (id) => this.familleService.delete(id),
+    },
+    recommandation: {
+      getAll: () => this.recommandationService.getAll(),
+      create: (d) => this.recommandationService.create(d),
+      update: (id, d) => this.recommandationService.update(id, d),
+      delete: (id) => this.recommandationService.delete(id),
     },
   };
 
   params = PARAMS;
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
   modalOuvert = signal(false);
+  menuOuvert = signal(false);
 
   // id de la ligne en cours de modification (null = mode ajout)
   editId = signal<number | null>(null);
@@ -164,6 +215,8 @@ export class Parametre implements OnInit {
     categorie: [],
     type: [], // rempli par l'API
     agent: [],
+    poste: [],
+    processus: [],
     recommandation: [],
     famille: [],
     sousfamille: [],
@@ -179,11 +232,20 @@ export class Parametre implements OnInit {
   libelleCle: Record<string, string> = { famille: 'Lib_fam' };
 
   ngOnInit() {
-    this.charger('annee');
-    this.charger('type');
+    this.route.queryParamMap.subscribe((queryParams) => {
+      const module = queryParams.get('module');
+      if (module && this.params.some((param) => param.id === module)) {
+        this.actifId.set(module);
+        this.charger(module);
+      }
+    });
     this.charger('annee');
     this.charger('type');
     this.charger('typeposte');
+    this.charger('poste');
+    this.charger('processus');
+    this.charger('famille');
+    this.charger('recommandation');
   }
 
   // ---------- API : chargement d'un onglet ----------

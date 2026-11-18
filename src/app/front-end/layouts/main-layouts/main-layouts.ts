@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { PARAMS } from '../../../parametre/parametre';
 
 @Component({
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
@@ -10,8 +11,29 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 export class MainLayouts {
   readonly profil = 'ADMINISTRATEUR';
   readonly poste = 'DIRECTION GÉNÉRALE DU TRÉSOR';
+  readonly parametres = PARAMS;
+  readonly parametresOuverts = signal(false);
+  readonly moduleActif = signal('annee');
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, route: ActivatedRoute) {
+    route.queryParamMap.subscribe((queryParams) => {
+      const module = queryParams.get('module');
+      if (module && this.parametres.some((parametre) => parametre.id === module)) {
+        this.moduleActif.set(module);
+        this.parametresOuverts.set(true);
+      }
+    });
+  }
+
+  basculerParametres() {
+    this.parametresOuverts.update((ouvert) => !ouvert);
+  }
+
+  choisirParametre(id: string) {
+    this.moduleActif.set(id);
+    this.parametresOuverts.set(true);
+    this.router.navigate(['/home/parametres'], { queryParams: { module: id } });
+  }
 
   deconnexion() {
     this.router.navigate(['/login']);
