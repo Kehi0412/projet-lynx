@@ -1,66 +1,69 @@
+<ngx-spinner type="ball-clip-rotate" size="medium"></ngx-spinner>
+
 <main class="login-page">
-  <section class="login-panel" aria-labelledby="titre-connexion">
+  <section class="login-panel">
+
     <div class="login-brand">
       <img src="/img_1.png" alt="Trésor public">
-      <span class="brand-separator" aria-hidden="true"></span>
-      <span class="brand-name">LINX <small>GESTION DES MISSIONS</small></span>
+      <span class="brand-separator"></span>
+      <div class="brand-name">
+        LINX
+        <small>GESTION DES MISSIONS</small>
+      </div>
     </div>
 
-    <p class="login-eyebrow">DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE</p>
-    <h1 id="titre-connexion">Authentification</h1>
-    <p class="login-intro">Accédez à votre espace de gestion des missions d’inspection et d’audit.</p>
+    <p class="login-intro">
+      Accédez à votre espace de gestion des missions
+      d'inspection et d'audit.
+    </p>
 
-    @if (etape() === 'matricule') {
-      <form (ngSubmit)="demanderCode()">
+    <form [formGroup]="loginForm" (ngSubmit)="connexion()" novalidate>
+
+      <div class="field-group">
         <label for="matricule">Matricule</label>
         <input
           id="matricule"
           type="text"
-          [(ngModel)]="matricule"
-          (input)="erreur.set('')"
-          name="matricule"
+          formControlName="matricule"
           placeholder="Exemple : 000888A"
           autocomplete="username"
-          required
-        >
-        <p class="field-help">Un code de vérification sera envoyé par courriel et SMS.</p>
-        <button class="primary-action" type="submit">Continuer</button>
-      </form>
-    } @else {
-      <form (ngSubmit)="verifierCode()">
-        <div class="otp-heading">
-          <div>
-            <label for="code-otp">Code de vérification (OTP)</label>
-            <p class="field-help">Saisissez le code à 6 chiffres reçu pour le matricule {{ matricule }}.</p>
-          </div>
-          <button class="text-action" type="button" (click)="retourAuMatricule()">Modifier</button>
+        />
+        @if (loginForm.controls.matricule.touched && loginForm.controls.matricule.hasError('required')) {
+        <p class="field-error">Le matricule est obligatoire.</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="motDePasse">Mot de passe</label>
+        <div class="password-field">
+          <input
+            id="motDePasse"
+            [type]="afficherMdp ? 'text' : 'password'"
+            formControlName="motDePasse"
+            placeholder="Votre mot de passe"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="afficherMdp = !afficherMdp"
+            [attr.aria-label]="afficherMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+            {{ afficherMdp ? 'Masquer' : 'Afficher' }}
+          </button>
         </div>
-        <input
-          id="code-otp"
-          type="text"
-          [(ngModel)]="codeOtp"
-          (input)="erreur.set('')"
-          name="codeOtp"
-          inputmode="numeric"
-          autocomplete="one-time-code"
-          maxlength="6"
-          pattern="[0-9]{6}"
-          placeholder="••••••"
-          required
-        >
-        <p class="demo-note">Mode démonstration : aucun service SMS/courriel n’est raccordé. Code de test : 123456.</p>
-        <button class="primary-action" type="submit">Connexion</button>
-        <button class="secondary-action" type="button" (click)="renvoyerCode()">Renvoyer le code</button>
-      </form>
-    }
+        @if (loginForm.controls.motDePasse.touched && loginForm.controls.motDePasse.hasError('required')) {
+        <p class="field-error">Le mot de passe est obligatoire.</p>
+        }
+      </div>
 
-    @if (erreur()) {
-      <p class="login-message error" role="alert">{{ erreur() }}</p>
-    }
-    @if (succes()) {
-      <p class="login-message success" role="status">Connexion réussie. Ouverture de votre espace…</p>
-    }
+      <button type="submit" class="primary-action" [disabled]="isLoading">
+        {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+      </button>
+    </form>
 
-    <footer class="login-footer">LINX V2 <span>•</span> Accès réservé aux utilisateurs autorisés</footer>
+    <footer class="login-footer">
+      LINX V2 <span>•</span> Accès réservé aux utilisateurs autorisés
+    </footer>
+
   </section>
 </main>

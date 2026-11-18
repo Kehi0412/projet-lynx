@@ -1,0 +1,78 @@
+<section class="carte">
+  <h2>Nouvel audit</h2>
+
+  <form (ngSubmit)="ajouter()">
+    <div class="grille">
+      <div class="champ">
+        <label>Identifiant de l'auditeur</label>
+        <input type="text" name="idAuditeur" [(ngModel)]="audit.auditeur" placeholder="Ex. AUD-001">
+      </div>
+      <div class="champ">
+        <label>Nom de l'audité</label>
+        <input type="text" name="nomAudite" [(ngModel)]="audit.nomAudite" placeholder="Ex. Trésorerie générale">
+      </div>
+      <div class="champ">
+        <label>Type d'audit</label>
+        <select name="typeAudite" [(ngModel)]="audit.typeAudite">
+          <option value="" disabled>Choisir un type</option>
+          @for (t of typesAudit; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <div class="champ">
+        <label>Période : début</label>
+        <input type="date" name="periodeDebut" [(ngModel)]="audit.periodeDebut">
+      </div>
+      <div class="champ">
+        <label>Période : fin</label>
+        <input type="date" name="periodeFin" [(ngModel)]="audit.periodeFin">
+      </div>
+      <div class="champ">
+        <label>Livraison attendue</label>
+        <input type="date" name="livraisonAttendue" [(ngModel)]="audit.livraisonAttendue">
+      </div>
+      <div class="champ">
+        <label>Date</label>
+        <input type="date" name="date" [(ngModel)]="audit.date">
+      </div>
+    </div>
+
+    @if (erreur) { <p class="erreur">{{ erreur }}</p> }
+    @if (message) { <p class="ok">{{ message }}</p> }
+
+    <div class="actions">
+      <button type="submit" class="btn-ajouter">＋ Ajouter</button>
+      <button type="button" class="btn-vider" (click)="vider()">Vider</button>
+    </div>
+  </form>
+</section>
+
+<section class="carte">
+  <h2>Audits enregistrés ({{ audits.length }})</h2>
+  <div class="defile">
+    <table>
+      <thead>
+      <tr>
+        <th>Auditeur</th><th>Audité</th><th>Type</th><th>Période</th>
+        <th>Livraison</th><th>Date</th><th></th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (a of audits; track a.id) {
+          <tr>
+            <td>{{ a.auditeur }}</td>
+            <td>{{ a.nomAudite }}</td>
+            <td>{{ a.typeAudite }}</td>
+            <td>{{ a.periodeDebut }} → {{ a.periodeFin }}</td>
+            <td>{{ a.livraisonAttendue }}</td>
+            <td>{{ a.date }}</td>
+            <td><button class="btn-suppr" (click)="supprimer(a.id)">Supprimer</button></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7">Aucun audit ajouté pour le moment.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

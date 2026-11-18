@@ -1,6 +1,7 @@
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 interface InspectionRecord {
   id: number;
@@ -14,10 +15,10 @@ interface InspectionRecord {
 }
 
 @Component({
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe,FormsModule],
   selector: 'app-inspection',
-  styleUrl: './inspection.css',
-  templateUrl: './inspection.html',
+  styleUrl: './inspection.component.css',
+  templateUrl: './inspection.component.html',
 })
 export class Inspection {
   readonly annees = [2026, 2025, 2024, 2023];
@@ -109,7 +110,9 @@ export class Inspection {
 
   supprimer(id: number) {
     if (!window.confirm('Confirmer la suppression de cette mission d’inspection ?')) return;
-    this.inspections.update((inspections) => inspections.filter((inspection) => inspection.id !== id));
+    this.inspections.update((inspections) =>
+      inspections.filter((inspection) => inspection.id !== id),
+    );
   }
 
   clicFond(event: MouseEvent) {

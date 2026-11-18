@@ -1,17 +1,16 @@
-<header class="page-heading">
-  <div>
-    <h1>Missions d’inspection</h1>
-    <p>Consultation et enregistrement des missions d’inspection.</p>
-  </div>
-  <button class="btn primary" type="button" (click)="ouvrir()">Nouvelle mission</button>
-</header>
+<div>
+  <h1>Missions d’inspection</h1>
+  <p>Consultation et enregistrement des missions d’inspection.</p>
+</div>
+<button class="btn primary" type="button" (click)="ouvrir()">Nouvelle mission</button>
+
 
 <section class="inspection-filters">
   <label>
     <span>Année de gestion</span>
     <select [(ngModel)]="anneeChoisie" aria-label="Année de gestion">
       @for (annee of annees; track annee) {
-        <option [value]="annee">{{ annee }}</option>
+      <option [value]="annee">{{ annee }}</option>
       }
     </select>
   </label>
@@ -29,32 +28,32 @@
   <div class="table-wrap">
     <table>
       <thead>
-        <tr>
-          <th>Référence</th><th>Poste / service</th><th>Chef de mission</th>
-          <th>Date de début</th><th>Date de fin</th><th>Statut</th><th>Actions</th>
-        </tr>
+      <tr>
+        <th>Référence</th><th>Poste / service</th><th>Chef de mission</th>
+        <th>Date de début</th><th>Date de fin</th><th>Statut</th><th>Actions</th>
+      </tr>
       </thead>
       <tbody>
-        @for (inspection of inspectionsFiltrees; track inspection.id) {
-          <tr>
-            <td class="reference">{{ inspection.reference }}</td>
-            <td>{{ inspection.poste }}</td>
-            <td>{{ inspection.chefMission }}</td>
-            <td>{{ inspection.dateDebut | date:'dd/MM/yyyy' }}</td>
-            <td>{{ inspection.dateFin | date:'dd/MM/yyyy' }}</td>
-            <td>
+      @for (inspection of inspectionsFiltrees; track inspection.id) {
+      <tr>
+        <td class="reference">{{ inspection.reference }}</td>
+        <td>{{ inspection.poste }}</td>
+        <td>{{ inspection.chefMission }}</td>
+        <td>{{ inspection.dateDebut | date:'dd/MM/yyyy' }}</td>
+        <td>{{ inspection.dateFin | date:'dd/MM/yyyy' }}</td>
+        <td>
               <span class="badge"
                     [class.cours]="inspection.statut === 'En cours'"
                     [class.prevu]="inspection.statut === 'Planifiée'"
                     [class.fini]="inspection.statut === 'Terminée'">{{ inspection.statut }}</span>
-            </td>
-            <td>
-              <button class="action-link" type="button" (click)="supprimer(inspection.id)">Supprimer</button>
-            </td>
-          </tr>
-        } @empty {
-          <tr><td colspan="7" class="vide">Aucune mission d’inspection pour cette année.</td></tr>
-        }
+        </td>
+        <td>
+          <button class="action-link" type="button" (click)="supprimer(inspection.id)">Supprimer</button>
+        </td>
+      </tr>
+      } @empty {
+      <tr><td colspan="7" class="vide">Aucune mission d’inspection pour cette année.</td></tr>
+      }
       </tbody>
     </table>
   </div>
@@ -93,7 +92,7 @@
       </label>
     </div>
     @if (erreurDate()) {
-      <p class="form-error" role="alert">{{ erreurDate() }}</p>
+    <p class="form-error" role="alert">{{ erreurDate() }}</p>
     }
     <div class="modal-actions">
       <button class="btn" type="button" (click)="fermer()">Annuler</button>

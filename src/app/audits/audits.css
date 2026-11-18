@@ -1,0 +1,43 @@
+.carte {
+  margin-bottom: 22px;
+  padding: 22px;
+  background: #fff;
+  border-radius: 14px;
+  border-top: 5px solid #e8a83a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+h2 { margin: 0 0 16px; color: #1e7a46; }
+
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 14px; color: #145c34; }
+input, select {
+  width: 100%; box-sizing: border-box; padding: 10px 12px; font-size: 15px;
+  border: 2px solid #d9c9a8; border-radius: 10px; background: #fffdf8;
+}
+input:focus, select:focus { outline: none; border-color: #1e7a46; box-shadow: 0 0 0 3px rgba(30, 122, 70, 0.2); }
+
+.actions { display: flex; gap: 10px; margin-top: 18px; }
+.btn-ajouter {
+  padding: 11px 22px; border: none; border-radius: 10px; cursor: pointer;
+  background: linear-gradient(135deg, #1e7a46, #145c34); color: #fff; font-weight: 700;
+}
+.btn-vider {
+  padding: 11px 18px; border: 2px solid #b8741a; border-radius: 10px; cursor: pointer;
+  background: transparent; color: #b8741a; font-weight: 700;
+}
+.btn-vider:hover { background: #b8741a; color: #fff; }
+
+.erreur { color: #a31515; font-weight: 700; margin: 14px 0 0; }
+.ok { color: #1e7a46; font-weight: 700; margin: 14px 0 0; }
+
+.defile { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; background: #1e7a46; color: #fff; padding: 11px; }
+td { padding: 11px; border-bottom: 1px solid #f0e2cc; }
+tbody tr:hover { background: #fff1de; }
+
+.btn-suppr {
+  padding: 6px 12px; border: 1px solid #a31515; border-radius: 8px; cursor: pointer;
+  background: transparent; color: #a31515; font-weight: 600;
+}
+.btn-suppr:hover { background: #a31515; color: #fff; }

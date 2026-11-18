@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+
 interface Mission {
   ref: string;
   annee: number;
@@ -8,6 +9,8 @@ interface Mission {
   structure: string;
   statut: 'En cours' | 'Terminée' | 'Planifiée';
 }
+
+let FormsModul;
 
 @Component({
   selector: 'app-accueil',
@@ -84,4 +87,6 @@ export class Accueil {
     return this.missions.filter((m) => m.annee === +this.anneeChoisie && m.statut === 'En cours')
       .length;
   }
+
+
 }

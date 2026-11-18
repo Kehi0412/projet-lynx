@@ -1,5 +1,5 @@
 <header class="topbar">
-  <a class="brand" routerLink="/accueil" aria-label="LINX - Tableau de bord">
+  <a class="brand" routerLink="/home/accueil" aria-label="LINX - Tableau de bord">
     <img src="/img_1.png" alt="">
     <span class="brand-title">LINX<small>GESTION DES MISSIONS</small></span>
   </a>
@@ -17,24 +17,28 @@
   <aside class="sidebar">
     <div class="profile-label">PROFIL {{ profil }}</div>
     <nav aria-label="Navigation principale">
-      <a routerLink="/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <span class="nav-icon" aria-hidden="true">⌂</span> Tableau de bord
+
+      <a routerLink="/home/accueil" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="nav-icon" aria-hidden="true">🏠</span> Tableau de bord
       </a>
 
       <p class="nav-section">GESTION DES MISSIONS</p>
-      <a routerLink="/mission" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">▣</span> Missions
+      <a routerLink="/home/mission" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">🔲</span> Missions
       </a>
-      <a routerLink="/inspection" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">✓</span> Inspections
+      <a routerLink="/home/inspection" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">🔍</span> Inspections
       </a>
-      <a routerLink="/rapport" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">▤</span> Rapports et statistiques
+      <a routerLink="/home/audits" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">☑</span> Audits
+      </a>
+      <a routerLink="/home/rapport" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
       </a>
 
       <p class="nav-section">ADMINISTRATION</p>
-      <a routerLink="/parametres" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">⚙</span> Paramètres
+      <a routerLink="/home/parametres" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">⚙️</span> Paramètres
       </a>
     </nav>
     <button type="button" class="logout-button" (click)="deconnexion()">Déconnexion</button>
@@ -42,7 +46,7 @@
 
   <main class="main-content">
     <div class="breadcrumb">
-      <a routerLink="/accueil" aria-label="Accueil">⌂</a>
+      <a routerLink="/home/accueil" aria-label="Accueil">⌂</a>
       <span aria-hidden="true">›</span>
       <span>LINX</span>
     </div>

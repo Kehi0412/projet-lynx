@@ -1,0 +1,37 @@
+<header class="entete">
+  <h1>Rapports et états statistiques</h1>
+  <button class="btn primary" type="button" (click)="imprimer()">Imprimer / PDF</button>
+</header>
+
+<p class="bandeau">Année de gestion en cours : <strong>{{ anneeEnCours }}</strong></p>
+
+<!-- Filtres multicritères -->
+<section class="filtres">
+  <div>
+    <label for="fAnnee">Année de gestion</label>
+    <select id="fAnnee" (change)="setFiltre('annee', $event)">
+      <option value="">Toutes</option>
+      @for (a of annees;track a) {
+      <option [value]="a">{{ a }}{{ a === anneeEnCours ? ' (en cours)' : '' }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="fTri">Trimestre</label>
+    <select id="fTri" (change)="setFiltre('trimestre', $event)">
+      <option value="">Tous</option>
+      <option value="1">1er trimestre</option>
+      <option value="2">2e trimestre</option>
+      <option value="3">3e trimestre</option>
+      <option value="4">4e trimestre</option>
+    </select>
+  </div>
+  <div>
+    <label for="fType">Type de mission</label>
+    <select id="fType" (change)="setFiltre('typeMission', $event)">
+      <option value="">Tous</option>
+      <option value="Inspection">Inspection</option>
+      <option value="Audit">Audit</option>
+    </select>
+  </div>
+</section>
