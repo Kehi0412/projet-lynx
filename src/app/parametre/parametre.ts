@@ -11,7 +11,7 @@ import { TypePosteService } from '../back-end/services/parametre/typePoste.servi
 interface Champ {
   cle: string;
   label: string;
-  type?: 'text' | 'date' | 'textarea' | 'select'| 'password';
+  type?: 'text' | 'date' | 'textarea' | 'select' | 'password' | 'number';
   source?: string; // pour 'select' : paramètre qui fournit les options
   requis?: boolean;
   pleine?: boolean;
@@ -78,6 +78,8 @@ export const PARAMS: Param[] = [
     champs: [
       { cle: 'codeProcessus', label: 'Code', requis: true },
       { cle: 'libelleProcessus', label: 'Libellé', requis: true },
+      { cle: 'libelleCourtProcessus', label: 'Libellé court', requis: true },
+      { cle: 'libelleLongProcessus', label: 'Libellé long', requis: true, pleine: true },
     ],
   },
   {
@@ -85,24 +87,25 @@ export const PARAMS: Param[] = [
     id: 'recommandation',
     label: 'Recommandation',
     champs: [
-      { cle: 'Lib_rec', label: 'Libellé', requis: true, pleine: true },
-      { cle: 'Const_rec', label: 'Constat', type: 'textarea', requis: true, pleine: true },
-      { cle: 'Cse_const_rec', label: 'Cause du constat', type: 'textarea', pleine: true },
-      { cle: 'D_db_rec', label: 'Date de début', type: 'date', requis: true },
-      { cle: 'D_fin_rec', label: 'Date de fin', type: 'date', requis: true },
-      { cle: 'Ob_rec', label: 'Observation', type: 'textarea', pleine: true },
-      { cle: 'Pr_att_rec', label: 'Pr_att_rec', pleine: true },
+      { cle: 'libelleRecommandation', label: 'Libellé', requis: true, pleine: true },
+      { cle: 'constatRecommandation', label: 'Constat', type: 'textarea', requis: true, pleine: true },
+      { cle: 'causeConstatRecommandation', label: 'Cause du constat', type: 'textarea', pleine: true },
+      { cle: 'dateDebutRecommandation', label: 'Date de début', type: 'date', requis: true },
+      { cle: 'dateFinRecommandation', label: 'Date de fin', type: 'date', requis: true },
+      { cle: 'objectifRecommandation', label: 'Objectif', type: 'textarea', pleine: true },
+      { cle: 'preuveAttendueRecommandation', label: 'Preuve attendue', type: 'textarea', pleine: true },
+      { cle: 'idSousFamille', label: 'Identifiant de sous-famille', type: 'number', requis: true },
+      { cle: 'idMission', label: 'Identifiant de mission', type: 'number', requis: true },
     ],
   },
   {
-    // entité famille : Cod_fam, Lib_fam, Typ_fam, Nat_fam
     id: 'famille',
     label: 'Famille',
     champs: [
-      { cle: 'Cod_fam', label: 'Code', requis: true },
-      { cle: 'Lib_fam', label: 'Libellé', requis: true },
-      { cle: 'Typ_fam', label: 'Type', requis: true },
-      { cle: 'Nat_fam', label: 'Nature', requis: true },
+      { cle: 'codeFamille', label: 'Code', requis: true },
+      { cle: 'libelleFamille', label: 'Libellé', requis: true },
+      { cle: 'typeFamille', label: 'Type', requis: true },
+      { cle: 'natureFamille', label: 'Nature', requis: true },
     ],
   },
   {
@@ -200,8 +203,9 @@ export class Parametre implements OnInit {
 
   params = PARAMS;
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
+  confirmationModal = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
   modalOuvert = signal(false);
-  menuOuvert = signal(false);
+  confirmationOuverte = signal(false);
 
   // id de la ligne en cours de modification (null = mode ajout)
   editId = signal<number | null>(null);
@@ -229,7 +233,7 @@ export class Parametre implements OnInit {
   form: FormGroup = this.fb.group({});
 
   // Colonne affichée pour chaque liste déroulante liée
-  libelleCle: Record<string, string> = { famille: 'Lib_fam' };
+  libelleCle: Record<string, string> = { famille: 'libelleFamille' };
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((queryParams) => {
@@ -278,6 +282,21 @@ export class Parametre implements OnInit {
     return l ? l[this.libelleCle[source]] : '-';
   }
 
+  valeurConfirmation(champ: Champ): string {
+    const valeur = this.form.get(champ.cle)?.value;
+    if (champ.type === 'password') return valeur ? '••••••' : '-';
+    if (champ.type === 'select') return this.libelle(champ.source!, valeur);
+    return valeur === null || valeur === undefined || valeur === '' ? '-' : String(valeur);
+  }
+
+  libelleConfirmation(): string {
+    const champLibelle = this.actif().champs.find((champ) =>
+      champ.cle.toLowerCase().includes('libelle'),
+    );
+    const champAffiche = champLibelle ?? this.actif().champs[0];
+    return champAffiche ? this.valeurConfirmation(champAffiche) : '-';
+  }
+
   choisir(id: string) {
     this.actifId.set(id);
     this.charger(id);
@@ -295,6 +314,7 @@ export class Parametre implements OnInit {
     if (p.statut) controles['enCours'] = [ligne?.['enCours'] ?? false];
     this.form = this.fb.group(controles);
     this.editId.set(ligne ? Number(ligne['id']) : null);
+    this.confirmationOuverte.set(false);
     this.modalOuvert.set(true);
     this.modal().nativeElement.showModal();
   }
@@ -302,11 +322,30 @@ export class Parametre implements OnInit {
   fermer() {
     this.modal().nativeElement.close();
     this.modalOuvert.set(false);
+    this.confirmationOuverte.set(false);
     this.editId.set(null);
   }
 
   clicFond(e: MouseEvent) {
     if (e.target === this.modal().nativeElement) this.fermer();
+  }
+
+  clicFondConfirmation(e: MouseEvent) {
+    if (e.target === this.confirmationModal().nativeElement) this.annulerConfirmation();
+  }
+
+  demanderConfirmation() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.confirmationOuverte.set(true);
+    this.confirmationModal().nativeElement.showModal();
+  }
+
+  annulerConfirmation() {
+    this.confirmationModal().nativeElement.close();
+    this.confirmationOuverte.set(false);
   }
 
   // ---------- Enregistrer (ajout ou modification) ----------
@@ -316,8 +355,26 @@ export class Parametre implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
+    if (this.editId() === null) {
+      this.demanderConfirmation();
+      return;
+    }
+    this.enregistrerDefinitivement();
+  }
+
+  confirmerEnregistrement() {
+    this.annulerConfirmation();
+    this.enregistrerDefinitivement();
+  }
+
+  private enregistrerDefinitivement() {
     const id = this.actifId();
-    const valeurs = this.form.getRawValue();
+    const valeurs = { ...this.form.getRawValue() };
+    for (const champ of this.actif().champs) {
+      if (champ.type === 'number' && valeurs[champ.cle] !== '') {
+        valeurs[champ.cle] = Number(valeurs[champ.cle]);
+      }
+    }
     const editId = this.editId();
 
     // Onglet branché sur l'API
