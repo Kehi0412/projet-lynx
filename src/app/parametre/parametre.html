@@ -75,7 +75,6 @@
       <h2>{{ modeEdition() ? 'Modifier' : 'Ajouter' }} : {{ actif().label }}</h2>
       <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
     </div>
-
     <form [formGroup]="form" (ngSubmit)="enregistrer()">
       <div class="grid">
         @for (c of actif().champs; track c.cle) {
@@ -96,7 +95,7 @@
               }
             } @else {
               <input [id]="c.cle" [formControlName]="c.cle"
-                     [type]="c.type === 'date' ? 'date' : c.type === 'password' ? 'password' : 'text'">
+                     [type]="c.type === 'date' ? 'date' : c.type === 'password' ? 'password' : c.type === 'number' ? 'number' : 'text'">
             }
 
             @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {
@@ -116,9 +115,25 @@
       <div class="m-foot">
         <button class="btn" type="button" (click)="fermer()">Annuler</button>
         <button class="btn primary" type="submit">
-          {{ modeEdition() ? 'Mettre à jour' : 'Enregistrer' }}
+          {{ modeEdition() ? 'Mettre à jour' : 'Continuer' }}
         </button>
       </div>
     </form>
+  }
+</dialog>
+
+<dialog #confirmationModal class="confirmation-modal" (click)="clicFondConfirmation($event)">
+  @if (confirmationOuverte()) {
+    <div class="m-head">
+      <h2>Confirmer l'ajout</h2>
+      <button class="x" type="button" (click)="annulerConfirmation()" aria-label="Fermer">&times;</button>
+    </div>
+    <section class="confirmation">
+      <p>Confirmez-vous l'ajout de « <strong>{{ libelleConfirmation() }}</strong> » dans « {{ actif().label }} » ?</p>
+      <div class="m-foot">
+        <button class="btn btn-annuler" type="button" (click)="annulerConfirmation()">Annuler</button>
+        <button class="btn btn-confirmer" type="button" (click)="confirmerEnregistrement()">Confirmer</button>
+      </div>
+    </section>
   }
 </dialog>

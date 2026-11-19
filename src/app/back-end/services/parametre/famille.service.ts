@@ -2,40 +2,50 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { ApiService } from '../../httpRequetteServices/api.service (1)';
 
+export interface Famille {
+  id?: number;
+  codeFamille: string;
+  libelleFamille: string;
+  typeFamille: string;
+  natureFamille: string;
+  idSousFamille?: number;
+  libelleSousFamille?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class FamilleService {
   private apiService = inject(ApiService);
   private endpoint = 'api/familles';
 
-  getAll(): Observable<any> {
+  getAll(): Observable<Famille[]> {
     return this.apiService._get(this.endpoint).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  getById(id: any): Observable<any> {
+  getById(id: number): Observable<Famille> {
     return this.apiService._get(`${this.endpoint}/${id}`).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  create(data: any): Observable<any> {
+  create(data: Famille): Observable<Famille> {
     return this.apiService._post(this.endpoint, data).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  update(id: any, data: any): Observable<any> {
+  update(id: number, data: Famille): Observable<Famille> {
     return this.apiService._put(`${this.endpoint}/${id}`, data).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  delete(id: any): Observable<any> {
+  delete(id: number): Observable<void> {
     return this.apiService._delete(`${this.endpoint}/${id}`).pipe(
       map((response: any) => response),
       catchError(this._handleError),
