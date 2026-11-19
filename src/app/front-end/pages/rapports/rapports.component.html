@@ -11,7 +11,7 @@
     <label for="fAnnee">Année de gestion</label>
     <select id="fAnnee" (change)="setFiltre('annee', $event)">
       <option value="">Toutes</option>
-      @for (a of annees;track a) {
+      @for ( a of annees; track a) {
       <option [value]="a">{{ a }}{{ a === anneeEnCours ? ' (en cours)' : '' }}</option>
       }
     </select>

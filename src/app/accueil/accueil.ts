@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 interface Mission {
   ref: string;
   annee: number;
-  type: 'Audit' | 'Inspection' | 'Mission';
+  type: 'Audit'|'Inspection' | 'Mission';
   structure: string;
   statut: 'En cours' | 'Terminée' | 'Planifiée';
 }
@@ -23,15 +23,16 @@ export class Accueil {
   annees = [2026, 2025, 2024, 2023];
   anneeChoisie = 2026;
   typeChoisi = 'Tous';
+  totalAudit= 0;
 
   missions: Mission[] = [
     {
-      ref: 'M-001',
-      annee: 2026,
-      type: 'Audit',
-      structure: 'Trésorerie générale',
-      statut: 'En cours',
-    },
+    ref: 'M-001',
+  annee: 2026,
+  type: 'Audit',
+  structure: 'tresor public',
+  statut: 'Planifiée',
+},
     {
       ref: 'M-002',
       annee: 2026,
@@ -43,7 +44,7 @@ export class Accueil {
     {
       ref: 'M-004',
       annee: 2025,
-      type: 'Audit',
+      type: 'Mission',
       structure: 'Direction régionale',
       statut: 'Terminée',
     },
@@ -87,6 +88,15 @@ export class Accueil {
     return this.missions.filter((m) => m.annee === +this.anneeChoisie && m.statut === 'En cours')
       .length;
   }
+  menuOuvert = true;
+  vueActive = 'dashboard';
 
+  toggleMenu() {
+    this.menuOuvert = !this.menuOuvert;
+  }
+
+  afficher(vue: string) {
+    this.vueActive = vue;
+  }
 
 }
