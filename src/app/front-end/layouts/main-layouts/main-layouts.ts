@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { PARAMS } from '../../../parametre/parametre';
+imports: [RouterLink, RouterLinkActive, RouterOutlet];
 
 @Component({
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
@@ -10,7 +11,7 @@ import { PARAMS } from '../../../parametre/parametre';
 })
 export class MainLayouts {
   readonly profil = 'ADMINISTRATEUR';
-  readonly poste = 'DIRECTION GÉNÉRALE DU TRÉSOR';
+  readonly poste = 'Direction des Systemes Informatiques et Numerique';
   readonly parametres = PARAMS;
   readonly parametresOuverts = signal(false);
   readonly moduleActif = signal('annee');

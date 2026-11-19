@@ -7,8 +7,7 @@ import { MainLayouts } from './front-end/layouts/main-layouts/main-layouts';
 import { Missions } from './front-end/pages/missions/missions';
 import { Inspection } from './front-end/pages/inspection/inspection.component';
 import { Rapport } from './front-end/pages/rapports/rapports.component';
-import { Audits} from './audits/audits';
-
+import { AuditComponent } from '../audit/audit.component';
 export const routes: Routes = [
   {
     path: '',
@@ -28,7 +27,7 @@ export const routes: Routes = [
       { path: 'mission', component: Missions },
       { path: 'inspection', component: Inspection },
       { path: 'rapport', component: Rapport },
-      { path: 'audits', component: Audits },
+      { path: 'audit', component: AuditComponent },
     ],
   },
 ];
