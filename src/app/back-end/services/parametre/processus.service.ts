@@ -2,40 +2,48 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { ApiService } from '../../httpRequetteServices/api.service (1)';
 
+export interface Processus {
+  id?: number;
+  codeProcessus: string;
+  libelleProcessus: string;
+  libelleCourtProcessus: string;
+  libelleLongProcessus: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProcessusService {
   private apiService = inject(ApiService);
   private endpoint = 'api/processus';
 
-  getAll(): Observable<any> {
+  getAll(): Observable<Processus[]> {
     return this.apiService._get(this.endpoint).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  getById(id: any): Observable<any> {
+  getById(id: number): Observable<Processus> {
     return this.apiService._get(`${this.endpoint}/${id}`).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  create(data: any): Observable<any> {
+  create(data: Processus): Observable<Processus> {
     return this.apiService._post(this.endpoint, data).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  update(id: any, data: any): Observable<any> {
+  update(id: number, data: Processus): Observable<Processus> {
     return this.apiService._put(`${this.endpoint}/${id}`, data).pipe(
       map((response: any) => response),
       catchError(this._handleError),
     );
   }
 
-  delete(id: any): Observable<any> {
+  delete(id: number): Observable<void> {
     return this.apiService._delete(`${this.endpoint}/${id}`).pipe(
       map((response: any) => response),
       catchError(this._handleError),

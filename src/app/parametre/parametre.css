@@ -25,14 +25,22 @@ tr:last-child td { border-bottom: 0; }
 .suppr { background: none; border: 0; cursor: pointer; font-size: 1.1rem; }
 .suppr:disabled { opacity: .3; cursor: not-allowed; }
 
-/* Modal */
-dialog { border: 0; padding: 0; border-radius: 4px; width: min(680px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
-dialog::backdrop { background: rgba(10, 20, 30, .55); }
-.m-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #e3e6e8; }
+/* Fenêtre modale centrée */
+dialog { position: fixed; inset: 0; margin: auto; border: 0; padding: 0; border-radius: 12px; width: min(680px, calc(100% - 28px)); max-height: min(90vh, 760px); overflow-y: auto; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
+dialog::backdrop { background: rgba(10, 20, 30, .58); backdrop-filter: blur(3px); }
+.confirmation-modal { z-index: 20; width: min(520px, calc(100% - 28px)); border-radius: 12px; }
+.confirmation-modal::backdrop { background: rgba(10, 20, 30, .35); backdrop-filter: blur(1px); }
+.btn-annuler { border-color: #c62828; background: #c62828; color: #fff; font-weight: 600; }
+.btn-annuler:hover { border-color: #9f1d1d; background: #9f1d1d; }
+.btn-confirmer { border-color: #17834c; background: #17834c; color: #fff; font-weight: 600; }
+.btn-confirmer:hover { border-color: #11683c; background: #11683c; }
+.m-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; padding: 17px 22px; border-bottom: 1px solid #e3e6e8; background: #fff; }
 .m-head h2 { margin: 0; font-size: 1.15rem; }
 .x { background: none; border: 0; font-size: 1.6rem; cursor: pointer; }
 
 form { padding: 20px; }
+.confirmation { padding: 20px 22px 22px; }
+.confirmation > p { margin: 0 0 16px; color: #555e63; line-height: 1.5; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
 .full { grid-column: 1 / -1; }
 label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
@@ -43,4 +51,8 @@ textarea { min-height: 84px; resize: vertical; }
 .err { color: #b3261e; font-size: .85rem; margin-top: 2px; }
 .m-foot { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-@media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; }
+  .confirmation .m-foot { flex-direction: column-reverse; }
+  .confirmation .m-foot .btn { width: 100%; }
+}
