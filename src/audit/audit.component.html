@@ -1,0 +1,91 @@
+<div class="audit-container">
+
+  <!-- EN-TETE -->
+  <div class="audit-header">
+    <div>
+      <h1>Gestion des missions d'audit</h1>
+      <p>Suivi et contrôle des missions d'audit</p>
+    </div>
+    <button class="btn-nouvelle" (click)="afficherFormulaire = true">+ Nouvelle mission</button>
+  </div>
+
+  <!-- POPUP FORMULAIRE -->
+  <div class="modal-fond" *ngIf="afficherFormulaire" (click)="afficherFormulaire = false">
+    <div class="modal-boite" (click)="$event.stopPropagation()">
+      <div class="modal-entete">
+        <h2>Nouvelle mission d'audit</h2>
+        <button class="modal-fermer" (click)="afficherFormulaire = false">×</button>
+      </div>
+
+      <form (ngSubmit)="enregistrerMission()">
+        <div class="form-grille">
+          <div class="champ">
+            <label>Référence *</label>
+            <input name="reference" [(ngModel)]="nouvelleMission.reference" placeholder="AUD-2026-001" required>
+          </div>
+          <div class="champ">
+            <label>Intitulé de la mission *</label>
+            <input name="intitule" [(ngModel)]="nouvelleMission.intitule" placeholder="Intitulé de la mission" required>
+          </div>
+          <div class="champ">
+            <label>Type de mission</label>
+            <select name="typeMission" [(ngModel)]="nouvelleMission.typeMission">
+              <option>Audit interne</option>
+              <option>Audit externe</option>
+            </select>
+          </div>
+          <div class="champ">
+            <label>Service audité *</label>
+            <input name="service" [(ngModel)]="nouvelleMission.service" placeholder="Nom du service" required>
+          </div>
+          <div class="champ">
+            <label>Responsable de mission</label>
+            <input name="responsable" [(ngModel)]="nouvelleMission.responsable" placeholder="Nom du responsable">
+          </div>
+          <div class="champ">
+            <label>Date de début *</label>
+            <input type="date" name="dateDebut" [(ngModel)]="nouvelleMission.dateDebut" required>
+          </div>
+          <div class="champ">
+            <label>Date de fin *</label>
+            <input type="date" name="dateFin" [(ngModel)]="nouvelleMission.dateFin" required>
+          </div>
+          <div class="champ">
+            <label>Statut</label>
+            <select name="statut" [(ngModel)]="nouvelleMission.statut">
+              <option>Planifiée</option>
+              <option>En cours</option>
+              <option>Terminée</option>
+            </select>
+          </div>
+          <div class="champ pleine-largeur">
+            <label>Objectif</label>
+            <textarea name="objectif" [(ngModel)]="nouvelleMission.objectif" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-annuler" (click)="afficherFormulaire = false">Annuler</button>
+          <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- STATISTIQUES -->
+  <div class="statistiques">
+    <div class="stat-card">
+      <span>Total des missions</span>
+      <h3>{{ totalMissions }}</h3>
+    </div>
+    <div class="stat-card">
+      <span>Missions en cours</span>
+      <h3>{{ missionsEnCours }}</h3>
+    </div>
+    <div class="stat-card">
+      <span>Missions terminées</span>
+      <h3>{{ missionsTerminees }}</h3>
+    </div>
+  </div>
+
+</div>
