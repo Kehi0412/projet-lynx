@@ -1,53 +1,48 @@
 import { Injectable, inject } from '@angular/core';
-import { catchError, map, Observable, throwError } from 'rxjs';
-import { ApiService } from '../../httpRequetteServices/api.service (1)';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface Poste {
+  id?: number;
+  codePoste: string;
+  libelleCourt: string;
+  libelleLong: string;
+  matriculeResponsable: string;
+  typePosteId: number;
+  typePosteLibelle?: string;
+  processusId: number;
+  processusLibelle?: string;
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class PosteService {
-  private apiService = inject(ApiService);
-  private endpoint = 'api/postes';
+  private http = inject(HttpClient);
+  private readonly url =  'api/postes';// à adapter
 
-  getAll(): Observable<any> {
-    return this.apiService._get(this.endpoint).pipe(
-      map((response: any) => response),
-      catchError(this._handleError),
-    );
+  getAll(): Observable<Poste[]> {
+    return this.http.get<Poste[]>(this.url);
   }
 
-  getById(id: any): Observable<any> {
-    return this.apiService._get(`${this.endpoint}/${id}`).pipe(
-      map((response: any) => response),
-      catchError(this._handleError),
-    );
+  getBySousFamille(sousFamilleId: number): Observable<Poste[]> {
+    const params = new HttpParams().set('sousFamilleId', sousFamilleId);
+    return this.http.get<Poste[]>(this.url, { params });
   }
 
-  create(data: any): Observable<any> {
-    return this.apiService._post(this.endpoint, data).pipe(
-      map((response: any) => response),
-      catchError(this._handleError),
-    );
+  getById(id: number): Observable<Poste> {
+    return this.http.get<Poste>(`${this.url}/${id}`);
   }
 
-  update(id: any, data: any): Observable<any> {
-    return this.apiService._put(`${this.endpoint}/${id}`, data).pipe(
-      map((response: any) => response),
-      catchError(this._handleError),
-    );
+  create(poste: Poste): Observable<Poste> {
+    return this.http.post<Poste>(this.url, poste);
   }
 
-  delete(id: any): Observable<any> {
-    return this.apiService._delete(`${this.endpoint}/${id}`).pipe(
-      map((response: any) => response),
-      catchError(this._handleError),
-    );
+  update(id: number, poste: Poste): Observable<Poste> {
+    return this.http.put<Poste>(`${this.url}/${id}`, poste);
   }
 
-  private _handleError(error: any) {
-    const errMsg = error.message
-      ? error.message
-      : error.status
-        ? `${error.status} - ${error.statusText}`
-        : 'Server error';
-    return throwError(() => errMsg);
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
   }
 }
+

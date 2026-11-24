@@ -88,12 +88,28 @@ export const PARAMS: Param[] = [
     label: 'Recommandation',
     champs: [
       { cle: 'libelleRecommandation', label: 'Libellé', requis: true, pleine: true },
-      { cle: 'constatRecommandation', label: 'Constat', type: 'textarea', requis: true, pleine: true },
-      { cle: 'causeConstatRecommandation', label: 'Cause du constat', type: 'textarea', pleine: true },
+      {
+        cle: 'constatRecommandation',
+        label: 'Constat',
+        type: 'textarea',
+        requis: true,
+        pleine: true,
+      },
+      {
+        cle: 'causeConstatRecommandation',
+        label: 'Cause du constat',
+        type: 'textarea',
+        pleine: true,
+      },
       { cle: 'dateDebutRecommandation', label: 'Date de début', type: 'date', requis: true },
       { cle: 'dateFinRecommandation', label: 'Date de fin', type: 'date', requis: true },
       { cle: 'objectifRecommandation', label: 'Objectif', type: 'textarea', pleine: true },
-      { cle: 'preuveAttendueRecommandation', label: 'Preuve attendue', type: 'textarea', pleine: true },
+      {
+        cle: 'preuveAttendueRecommandation',
+        label: 'Preuve attendue',
+        type: 'textarea',
+        pleine: true,
+      },
       { cle: 'idSousFamille', label: 'Identifiant de sous-famille', type: 'number', requis: true },
       { cle: 'idMission', label: 'Identifiant de mission', type: 'number', requis: true },
     ],
@@ -115,8 +131,8 @@ export const PARAMS: Param[] = [
     champs: [
       { cle: 'Cod_sf', label: 'Code', requis: true },
       { cle: 'Lib_sf', label: 'Libellé', requis: true },
-      { cle: 'Typ_sf', label: 'Type', requis: true },
-      { cle: 'id_fam', label: 'Famille', type: 'select', source: 'famille', requis: true },
+      { cle: 'Typ_sf', label: 'Type', type: 'select', source: 'typeElement', requis: true },
+
     ],
   },
   {
@@ -225,6 +241,12 @@ export class Parametre implements OnInit {
     famille: [],
     sousfamille: [],
     typeposte: [],
+    typeElement: [
+      { id: 'FAMILLE_RISQUE', libelle: 'Famille risque' },
+      { id: 'SOUS_FAMILLE_RISQUE', libelle: 'Sous-famille risque' },
+      { id: 'FAMILLE_CONSTAT', libelle: 'Famille constat' },
+      { id: 'SOUS_FAMILLE_CONSTAT', libelle: 'Sous-famille constat' },
+    ],
   });
 
   lignes = computed(() => this.donnees()[this.actifId()] ?? []);
@@ -233,7 +255,7 @@ export class Parametre implements OnInit {
   form: FormGroup = this.fb.group({});
 
   // Colonne affichée pour chaque liste déroulante liée
-  libelleCle: Record<string, string> = { famille: 'libelleFamille' };
+  libelleCle: Record<string, string> = { famille: 'libelleFamille', typeElement: 'libelle' };
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((queryParams) => {

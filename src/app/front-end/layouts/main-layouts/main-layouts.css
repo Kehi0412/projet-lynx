@@ -282,7 +282,34 @@
   .profile-label,
   .nav-section,
   .logout-button {
-    display: none;
+    .logout-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - 24px);
+      margin: 12px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #c0392b;      /* rouge */
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(192, 57, 43, .35);
+      transition: all .2s;
+    }
+
+    .logout-button:hover {
+      background: #a93226;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(192, 57, 43, .45);
+    }
+
+    .logout-button:active {
+      transform: translateY(0);
+    }
   }
 
   .sidebar nav {
@@ -312,4 +339,52 @@ a.active, .menu-item.active {
   color: white !important;
   font-weight: bold;
   border-radius: 4px;
+}
+.sous-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 6px 0 10px 14px;
+  padding-left: 10px;
+  border-left: 2px solid #d9762f;
+}
+
+.sous-menu a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: darkolivegreen;
+  text-decoration: none;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.sous-menu a:hover {
+  background: #fbe9e2;
+  color: chocolate ;
+}
+
+.sous-menu a.active {
+  background: #fbe9e2;
+  color: #c8512a;
+  font-weight: 600;
+}
+
+  .nav-parent {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 13px 14px;
+  }
+
+
+.fleche {
+  margin-left: auto;
+  transition: transform .25s;
+}
+
+.fleche.ouvert {
+  transform: rotate(180deg);
 }

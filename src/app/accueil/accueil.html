@@ -1,8 +1,7 @@
 <section class="dashboard-title">
   <div>
-    <p class="eyebrow">LINX / ACCUEIL</p>
     <h1>Tableau de bord</h1>
-    <p class="subtitle">Vue d’ensemble des missions d’inspection et d’audit.</p>
+    <p class="subtitle">Vue d’ensemble des missions et d’inspection .</p>
   </div>
   <label class="year-filter">
     <span>Année de gestion</span>
@@ -20,12 +19,14 @@
     <strong>{{ totalMissions }}</strong>
     <small>Année {{ anneeChoisie }}</small>
   </article>
-  <article class="dashboard-stat slate">
-    <span>Audits</span>
-    <strong>{{ compter('Audit') }}</strong>
-    <small>Missions d’audit</small>
-  </article>
+
   <article class="dashboard-stat blue">
+    <span>Audit</span>
+    <strong>{{ totalAudit }}</strong>
+    <small>Année {{ anneeChoisie }}</small>
+  </article>
+
+    <article class="dashboard-stat blue">
     <span>Inspections</span>
     <strong>{{ compter('Inspection') }}</strong>
     <small>Missions d’inspection</small>
@@ -62,8 +63,10 @@
         <option value="Mission">Mission</option>
       </select>
     </label>
+    <button type="button" class="btn-deplier" (click)="deplie = !deplie">{{ deplie ? 'Replier ▲' : 'Déplier ▼' }}
+    </button>
   </div>
-
+  @if (deplie) {
   <div class="table-wrap">
     <table>
       <thead>
@@ -90,4 +93,5 @@
       </tbody>
     </table>
   </div>
+  }
 </section>
