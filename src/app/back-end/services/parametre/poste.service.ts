@@ -18,7 +18,7 @@ export interface Poste {
 @Injectable({ providedIn: 'root' })
 export class PosteService {
   private http = inject(HttpClient);
-  private readonly url =  'http://192.168.8.223:8080/api/postes'; // à adapter
+  private readonly url =  'api/postes';// à adapter
 
   getAll(): Observable<Poste[]> {
     return this.http.get<Poste[]>(this.url);

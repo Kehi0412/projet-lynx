@@ -20,10 +20,11 @@ let FormsModul;
   styleUrl: './accueil.css',
 })
 export class Accueil {
-  annees = [2026, 2025, 2024, 2023];
+  annees = [ 2027,2026, 2025, 2024, 2023];
   anneeChoisie = 2026;
   typeChoisi = 'Tous';
   totalAudit= 0;
+  deplie=true
 
   missions: Mission[] = [
     {

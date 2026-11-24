@@ -58,13 +58,15 @@
       <span>Type de mission</span>
       <select [(ngModel)]="typeChoisi" aria-label="Filtrer par type de mission">
         <option value="Tous">Tous les types</option>
-        <option value="Audit">Inspection</option>
+        <option value="Audit">Audit</option>
         <option value="Inspection">Inspection</option>
         <option value="Mission">Mission</option>
       </select>
     </label>
+    <button type="button" class="btn-deplier" (click)="deplie = !deplie">{{ deplie ? 'Replier ▲' : 'Déplier ▼' }}
+    </button>
   </div>
-
+  @if (deplie) {
   <div class="table-wrap">
     <table>
       <thead>
@@ -91,4 +93,5 @@
       </tbody>
     </table>
   </div>
+  }
 </section>

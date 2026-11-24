@@ -356,7 +356,7 @@ a.active, .menu-item.active {
   width: 100%;
   padding: 9px 12px;
   border-radius: 6px;
-  color: #333;
+  color: darkolivegreen;
   text-decoration: none;
   font-size: 14px;
   box-sizing: border-box;
@@ -364,7 +364,7 @@ a.active, .menu-item.active {
 
 .sous-menu a:hover {
   background: #fbe9e2;
-  color: #c8512a;
+  color: chocolate ;
 }
 
 .sous-menu a.active {

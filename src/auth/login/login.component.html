@@ -1,69 +1,28 @@
-<ngx-spinner type="ball-clip-rotate" size="medium"></ngx-spinner>
+<div class="login-card">
+  <div class="login-header">
+    <h2>BIENVENUE A LINX!</h2>
+    <p>Connectez-vous pour y acceder.</p>
+  </div>
+  <div class="logo-wrap">
+    <img src="img_1.png" alt="Trésor" />
+  </div>
 
-<main class="login-page">
-  <section class="login-panel">
+  <form [formGroup]="loginForm" (ngSubmit)="connexion()">
+    <label>Matricule</label>
+    <input type="text" formControlName="matricule" placeholder="Entrez votre matricule" />
 
-    <div class="login-brand">
-      <img src="/img_1.png" alt="Trésor public">
-      <span class="brand-separator"></span>
-      <div class="brand-name">
-        LINX
-        <small>GESTION DES MISSIONS</small>
-      </div>
+    <label>Mot de passe</label>
+    <div class="pwd-group">
+      <input [type]="afficherMdp ? 'text' : 'password'" formControlName="motDePasse"
+             placeholder="Entrez votre mot de passe" />
+      <button type="button" class="eye" (click)="afficherMdp = !afficherMdp">👁</button>
     </div>
 
-    <p class="login-intro">
-      Accédez à votre espace de gestion des missions
-      d'inspection et d'audit.
-    </p>
-
-    <form [formGroup]="loginForm" (ngSubmit)="connexion()" novalidate>
-
-      <div class="field-group">
-        <label for="matricule">Matricule</label>
-        <input
-          id="matricule"
-          type="text"
-          formControlName="matricule"
-          placeholder="Exemple : 000888A"
-          autocomplete="username"
-        />
-        @if (loginForm.controls.matricule.touched && loginForm.controls.matricule.hasError('required')) {
-        <p class="field-error">Le matricule est obligatoire.</p>
-        }
-      </div>
-
-      <div class="field-group">
-        <label for="motDePasse">Mot de passe</label>
-        <div class="password-field">
-          <input
-            id="motDePasse"
-            [type]="afficherMdp ? 'text' : 'password'"
-            formControlName="motDePasse"
-            placeholder="Votre mot de passe"
-            autocomplete="current-password"
-          />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="afficherMdp = !afficherMdp"
-            [attr.aria-label]="afficherMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
-            {{ afficherMdp ? 'Masquer' : 'Afficher' }}
-          </button>
-        </div>
-        @if (loginForm.controls.motDePasse.touched && loginForm.controls.motDePasse.hasError('required')) {
-        <p class="field-error">Le mot de passe est obligatoire.</p>
-        }
-      </div>
-
-      <button type="submit" class="primary-action" [disabled]="isLoading">
-        {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
-      </button>
-    </form>
-
-    <footer class="login-footer">
-      LINX V2 <span>•</span> Accès réservé aux utilisateurs autorisés
-    </footer>
-
-  </section>
-</main>
+    <label class="remember">
+      <input type="checkbox" formControlName="remember" /> Se souvenir de moi
+    </label>
+    <button type="submit" class="btn-connexion" [disabled]="isLoading">
+      {{ isLoading ? 'Connexion en cours...' : 'Connexion' }}
+    </button>
+  </form>
+</div>
