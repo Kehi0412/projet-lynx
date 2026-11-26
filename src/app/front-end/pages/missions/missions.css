@@ -1,90 +1,411 @@
 :host {
   display: block;
+  padding: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1e293b;
 }
 
-.table-wrap {
-  border-top: 3px solid var(--linx-orange);
-}
-
-.m-head {
+/* Barre d'onglets (inspection / audit) */
+.onglets {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 19px;
-  border-bottom: 1px solid #e3e6e8;
+  gap: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
 }
 
-.m-head h2 {
-  margin: 0;
-  color: #333a3e;
-  font-size: 18px;
+.onglets button {
+  padding: 8px 16px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.x {
-  border: 0;
-  background: transparent;
-  color: #596168;
-  font-size: 25px;
+.onglets button:hover {
+  background: #e2e8f0;
+}
+
+.onglets button.actif,
+.onglets button.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+/* Tableau des missions */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+thead {
+  background: #f1f5f9;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+th {
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* Fenêtre modale (<dialog #modal>) */
+dialog#modal {
+  width: min(720px, 94vw);
+  max-width: 100%;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+}
+
+dialog#modal::backdrop {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+/* Grille du formulaire */
+form .grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  form .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+form input,
+form select,
+form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Messages d'erreur de validation */
+.err {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #dc2626;
+}
+
+/* Boutons d'action */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
 }
 
-form {
-  padding: 20px;
+button[type="submit"],
+.btn-primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 16px;
+button[type="submit"]:hover,
+.btn-primary:hover {
+  background: #1d4ed8;
 }
 
-.full {
-  grid-column: 1 / -1;
+.btn-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  color: #424a4f;
-  font-size: 13px;
-  font-weight: 700;
+.btn-danger:hover {
+  background: #b91c1c;
+}.missions-page {
+   padding: 20px;
+   background-color: #f5f6f8;
+   min-height: 100%;
+   font-family: system-ui, -apple-system, sans-serif;
+ }
+
+/* Onglets Mission d'inspection / Mission d'audit */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-input,
-textarea {
+.tabs button {
+  padding: 8px 16px;
+  border: 1px solid #d9dee5;
+  background-color: #ffffff;
+  color: #4b5563;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabs button:hover {
+  border-color: #e85d35;
+  color: #e85d35;
+}
+
+.tabs button.active {
+  background-color: #e85d35;
+  border-color: #e85d35;
+  color: #ffffff;
+}
+
+/* En-tête et bouton Ajouter */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.btn-add {
+  background-color: #e85d35;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-add:hover {
+  background-color: #cf4d27;
+}
+
+/* Tableau */
+table {
   width: 100%;
-  min-height: 38px;
-  padding: 9px 10px;
-  border: 1px solid #cfd4d7;
-  border-radius: 2px;
-  background: #fff;
-  color: var(--linx-text);
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-textarea {
-  min-height: 85px;
+thead {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #4b5563;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: #fafafa;
+}
+
+td[colspan] {
+  text-align: center;
+  padding: 28px 16px;
+  color: #6b7280;
+}
+
+/* Modale / Formulaire d'ajout */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.modal h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.modal input,
+.modal select {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.modal input:focus,
+.modal select:focus {
+  outline: none;
+  border-color: #e85d35;
+  box-shadow: 0 0 0 3px rgba(232, 93, 53, 0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modal-actions button {
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-actions button[type='button'] {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.modal-actions button[type='button']:hover {
+  background-color: #f3f4f6;
+}
+
+.modal-actions button[type='submit'] {
+  background-color: #e85d35;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.modal-actions button[type='submit']:hover {
+  background-color: #cf4d27;
+}
+
+.modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal textarea {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+  font-family: inherit;
   resize: vertical;
 }
 
-.err {
-  margin-top: 4px;
-  color: #a52c24;
-  font-size: 12px;
-}
-
-.m-foot {
-  display: flex;
-  justify-content: flex-end;
-  gap: 9px;
-  margin-top: 20px;
-}
-
-@media (max-width: 560px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .full {
-    grid-column: auto;
-  }
+.modal textarea:focus {
+  outline: none;
+  border-color: #e85d35;
+  box-shadow: 0 0 0 3px rgba(232, 93, 53, 0.15);
 }

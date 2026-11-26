@@ -33,20 +33,19 @@
         <span class="nav-icon" aria-hidden="true">🏠</span> Tableau de bord
       </a>
 
-      <a routerLink="/home/mission" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">🔲</span> Missions
-      </a>
-      <a routerLink="/home/audit" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">📄</span> Audit
-      </a>
+      <div class="mission-nav">
+        <a class="nav-link" routerLink="/home/missions" routerLinkActive="active">
+          <span class="nav-icon" aria-hidden="true">■</span>
+          <span>Mission</span>
+        </a>
 
-      <a routerLink="/home/inspection" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">🔍</span> Inspections
-      </a>
+      </div>
+
+      <div class="parametres-nav">
       <a routerLink="/home/rapport" routerLinkActive="active">
         <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
       </a>
-
+      </div>
       <div class="parametres-nav">
         <a routerLink="/home/parametres" routerLinkActive="active" (click)="basculerParametres()"
            [attr.aria-expanded]="parametresOuverts()">

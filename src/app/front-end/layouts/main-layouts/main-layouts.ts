@@ -1,7 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { PARAMS } from '../../../parametre/parametre';
-imports: [RouterLink, RouterLinkActive, RouterOutlet];
 
 @Component({
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
@@ -11,12 +16,19 @@ imports: [RouterLink, RouterLinkActive, RouterOutlet];
 })
 export class MainLayouts {
   readonly profil = 'ADMINISTRATEUR';
-  readonly poste = 'Direction des Systemes Informatiques et Numerique';
+  readonly poste = 'Direction des Systemes Informatiques et Numer...'; // garde ta ligne d'origine complète
   readonly parametres = PARAMS;
   readonly parametresOuverts = signal(false);
   readonly moduleActif = signal('annee');
 
-  constructor(private router: Router, route: ActivatedRoute) {
+  readonly missionOuvert = signal(false);
+  readonly inspectionOuvert = signal(false);
+  readonly auditOuvert = signal(false);
+
+  constructor(
+    private router: Router,
+    route: ActivatedRoute,
+  ) {
     route.queryParamMap.subscribe((queryParams) => {
       const module = queryParams.get('module');
       if (module && this.parametres.some((parametre) => parametre.id === module)) {
@@ -28,6 +40,18 @@ export class MainLayouts {
 
   basculerParametres() {
     this.parametresOuverts.update((ouvert) => !ouvert);
+  }
+
+  basculerMission() {
+    this.missionOuvert.update((ouvert) => !ouvert);
+  }
+
+  basculerInspection() {
+    this.inspectionOuvert.update((ouvert) => !ouvert);
+  }
+
+  basculerAudit() {
+    this.auditOuvert.update((ouvert) => !ouvert);
   }
 
   choisirParametre(id: string) {
