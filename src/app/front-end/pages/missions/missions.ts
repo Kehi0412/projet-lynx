@@ -1,78 +1,101 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
+export type TypeMission = 'INSPECTION' | 'AUDIT';
 
 export interface Mission {
+  id_miss: string;
+  typeMission: TypeMission;
   Cod_miss: string;
-  Loc_miss: string;
   D_db_miss: string;
   D_fin_miss: string;
+  Loc_miss: string;
   Stru_contr_miss: string;
-  Chf_pste_miss: string;
   Ma_chf_pste_miss: string;
+  Chf_pste_miss: string;
   Obj_miss: string;
-}
-
-// La date de fin doit être après la date de début
-function datesValides(g: AbstractControl): ValidationErrors | null {
-  const d1 = g.get('D_db_miss')?.value;
-  const d2 = g.get('D_fin_miss')?.value;
-  return d1 && d2 && d2 < d1 ? { datesInvalides: true } : null;
+  Créer_par: string;
+  Crée_le: string;
+  Modifier_par?: string | null;
+  Modifier_le?: string | null;
+  Supprimer?: boolean;
 }
 
 @Component({
   selector: 'app-missions',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './missions.html',
   styleUrl: './missions.css',
 })
 export class Missions {
-  modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
+  private fb = inject(FormBuilder);
+
+  activeTab = signal<TypeMission>('INSPECTION');
+  isAddModalOpen = signal(false);
   missions = signal<Mission[]>([]);
 
-  form;
+  filteredMissions = computed(() =>
+    this.missions().filter((m) => m.typeMission === this.activeTab())
+  );
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.nonNullable.group(
-      {
-        Cod_miss: ['', Validators.required],
-        Loc_miss: ['', Validators.required],
-        D_db_miss: ['', Validators.required],
-        D_fin_miss: ['', Validators.required],
-        Stru_contr_miss: ['', Validators.required],
-        Chf_pste_miss: ['', Validators.required],
-        Ma_chf_pste_miss: [''],
-        Obj_miss: ['', Validators.required],
-      },
-      { validators: datesValides },
-    );
+  missionForm = this.fb.nonNullable.group({
+    typeMission: ['INSPECTION' as TypeMission, Validators.required],
+    Cod_miss: ['', Validators.required],
+    D_db_miss: ['', Validators.required],
+    D_fin_miss: ['', Validators.required],
+    Loc_miss: ['', Validators.required],
+    Stru_contr_miss: ['', Validators.required],
+    Ma_chf_pste_miss: ['', Validators.required],
+    Chf_pste_miss: ['', Validators.required],
+    Obj_miss: ['', Validators.required],
+  });
+
+  selectTab(tab: TypeMission): void {
+    this.activeTab.set(tab);
   }
 
-  ouvrir() {
-    this.form.reset();
-    this.modal().nativeElement.showModal();
+  openAddModal(): void {
+    this.missionForm.reset({
+      typeMission: this.activeTab(),
+      Cod_miss: '',
+      D_db_miss: '',
+      D_fin_miss: '',
+      Loc_miss: '',
+      Stru_contr_miss: '',
+      Ma_chf_pste_miss: '',
+      Chf_pste_miss: '',
+      Obj_miss: '',
+    });
+    this.isAddModalOpen.set(true);
   }
 
-  fermer() {
-    this.modal().nativeElement.close();
+  closeAddModal(): void {
+    this.isAddModalOpen.set(false);
   }
 
-  enregistrer() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  submitMission(): void {
+    if (this.missionForm.invalid) {
+      this.missionForm.markAllAsTouched();
       return;
     }
-    this.missions.update((l) => [...l, this.form.getRawValue()]);
-    this.fermer();
-  }
 
-  // Ferme le modal si on clique sur le fond
-  clicFond(e: MouseEvent) {
-    if (e.target === this.modal().nativeElement) this.fermer();
+    const raw = this.missionForm.getRawValue();
+    const maintenant = new Date().toISOString();
+
+    const nouvelleMission: Mission = {
+      id_miss: crypto.randomUUID(),
+      ...raw,
+      Créer_par: 'Administrateur', // À remplacer par l'utilisateur connecté
+      Crée_le: maintenant,
+      Modifier_par: null,
+      Modifier_le: null,
+      Supprimer: false,
+    };
+
+    this.missions.update((list) => [nouvelleMission, ...list]);
+    this.activeTab.set(raw.typeMission);
+    this.closeAddModal();
   }
 }
