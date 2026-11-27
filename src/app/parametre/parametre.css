@@ -98,7 +98,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   text-align: left;
   padding: 10px 14px;
   border-bottom: 1px solid #e3e6e8;
@@ -124,7 +125,8 @@ tr:last-child td {
   white-space: nowrap;
 }
 
-.modif, .suppr {
+.modif,
+.suppr {
   background: none;
   border: 0;
   cursor: pointer;
@@ -147,7 +149,7 @@ dialog {
   width: min(680px, calc(100% - 28px));
   max-height: min(90vh, 760px);
   overflow-y: auto;
-  box-shadow: 0 24px 70px rgba(0,0,0,.28);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
 }
 
 dialog::backdrop {
@@ -166,6 +168,7 @@ dialog::backdrop {
   backdrop-filter: blur(1px);
 }
 
+/* En-tête modale */
 .m-head {
   position: sticky;
   top: 0;
@@ -212,7 +215,9 @@ label {
   margin-bottom: 4px;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   width: 100%;
   box-sizing: border-box;
   font: inherit;
@@ -242,6 +247,44 @@ textarea {
   color: #b3261e;
   font-size: .85rem;
   margin-top: 4px;
+}
+
+/* NOUVEAU MESSAGE D'ERREUR */
+.message-erreur {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin: 16px 20px 0;
+  padding: 14px 16px;
+
+  background: #fde8e8;
+  border: 1px solid #e53935;
+  border-left: 5px solid #c62828;
+  border-radius: 7px;
+
+  color: #b71c1c;
+  font-size: 14px;
+  font-weight: 600;
+
+  opacity: 1;
+  filter: none;
+  backdrop-filter: none;
+}
+
+.message-erreur-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 23px;
+  height: 23px;
+
+  background: #c62828;
+  color: white;
+
+  border-radius: 50%;
+  font-weight: bold;
 }
 
 /* Pied de modale */
@@ -289,6 +332,7 @@ textarea {
 
 /* Responsive */
 @media (max-width: 560px) {
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -300,4 +344,5 @@ textarea {
   .confirmation .m-foot .btn {
     width: 100%;
   }
+
 }

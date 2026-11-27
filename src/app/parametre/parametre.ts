@@ -1,6 +1,19 @@
-import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
 
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -36,6 +49,7 @@ interface Param {
 type Ligne = Record<string, any>;
 
 export const PARAMS: Param[] = [
+
   // ANNÉE D'EXERCICE
   {
     id: 'annee',
@@ -265,6 +279,7 @@ export const PARAMS: Param[] = [
   styleUrl: './parametre.css',
 })
 export class Parametre implements OnInit {
+
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private toast = inject(ToastrService);
@@ -283,6 +298,7 @@ export class Parametre implements OnInit {
 
   // CONFIGURATION DES API
   private api: Record<string, any> = {
+
     annee: {
       getAll: () => this.anneeService.getAllAnnees(),
       create: (d: any) => this.anneeService.createAnnee(d),
@@ -358,10 +374,14 @@ export class Parametre implements OnInit {
 
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
 
-  confirmationModal = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
+  confirmationModal =
+    viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
 
   modalOuvert = signal(false);
   confirmationOuverte = signal(false);
+
+  // MESSAGE D'ERREUR DANS LA MODALE
+  erreurFormulaire = signal<string | null>(null);
 
   editId = signal<number | null>(null);
 
@@ -372,6 +392,7 @@ export class Parametre implements OnInit {
   actif = computed(() => this.params.find((p) => p.id === this.actifId())!);
 
   donnees = signal<Record<string, Ligne[]>>({
+
     annee: [],
     categorie: [],
     type: [],
@@ -393,7 +414,9 @@ export class Parametre implements OnInit {
 
   lignes = computed(() => this.donnees()[this.actifId()] ?? []);
 
-  anneeEnCours = computed(() => this.donnees()['annee'].find((l) => l['enCours']));
+  anneeEnCours = computed(() =>
+    this.donnees()['annee'].find((l) => l['enCours'])
+  );
 
   form: FormGroup = this.fb.group({});
 
@@ -405,34 +428,58 @@ export class Parametre implements OnInit {
     processus: 'libelle',
   };
 
-  // ANNÉE EN COURS : mémorisée dans le navigateur (le back-end n'a pas ce champ)
+  // CHAMPS UNIQUES
+  private readonly cleUnique: Record<string, string> = {
+    annee: 'libelleAnnee',
+    categorie: 'nom',
+    type: 'codeTypeMission',
+    agent: 'matricule',
+    poste: 'codePoste',
+    processus: 'code',
+    famille: 'codeFamille',
+    sousfamille: 'codeSousFamille',
+    typeposte: 'codeType',
+  };
+
+  // ANNÉE EN COURS
   private readonly CLE_ANNEE = 'linx_annee_en_cours';
+
   private libelleEnAttente: string | null = null;
 
   anneeEnCoursId = signal<number | null>(
-    Number(localStorage.getItem('linx_annee_en_cours')) || null,
+    Number(localStorage.getItem('linx_annee_en_cours')) || null
   );
 
   private fixerAnneeEnCours(id: number | null) {
+
     this.anneeEnCoursId.set(id);
 
-    if (id === null) localStorage.removeItem(this.CLE_ANNEE);
-    else localStorage.setItem(this.CLE_ANNEE, String(id));
+    if (id === null) {
+      localStorage.removeItem(this.CLE_ANNEE);
+    } else {
+      localStorage.setItem(this.CLE_ANNEE, String(id));
+    }
 
     this.donnees.update((d) => ({
       ...d,
-      annee: d['annee'].map((l) => ({ ...l, enCours: l['id'] === id })),
+      annee: d['annee'].map((l) => ({
+        ...l,
+        enCours: l['id'] === id
+      })),
     }));
   }
 
   // INITIALISATION
   ngOnInit() {
+
     this.route.queryParamMap.subscribe((queryParams) => {
+
       const module = queryParams.get('module');
 
       if (module && this.params.some((param) => param.id === module)) {
         this.actifId.set(module);
       }
+
     });
 
     this.charger('annee');
@@ -449,53 +496,75 @@ export class Parametre implements OnInit {
 
   // CHARGEMENT API
   charger(id: string) {
+
     const a = this.api[id];
 
     if (!a) return;
 
     a.getAll().subscribe({
+
       next: (data: any) => {
+
         console.log(`Réponse API ${id} :`, data);
 
-        let liste = Array.isArray(data) ? data : (data?.content ?? data?.data ?? []);
+        let liste = Array.isArray(data)
+          ? data
+          : (data?.content ?? data?.data ?? []);
 
         if (id === 'annee') {
-          // Une année vient d'être créée avec « en cours » coché : on la retrouve par son libellé
+
           if (this.libelleEnAttente) {
+
             const trouvee = liste
-              .filter((l: any) => l['libelleAnnee'] === this.libelleEnAttente)
+              .filter((l: any) =>
+                l['libelleAnnee'] === this.libelleEnAttente
+              )
               .sort((x: any, y: any) => y['id'] - x['id'])[0];
 
             this.libelleEnAttente = null;
 
             if (trouvee) {
               this.anneeEnCoursId.set(trouvee['id']);
-              localStorage.setItem(this.CLE_ANNEE, String(trouvee['id']));
+
+              localStorage.setItem(
+                this.CLE_ANNEE,
+                String(trouvee['id'])
+              );
             }
           }
 
-          // On applique le statut mémorisé
           const courante = this.anneeEnCoursId();
-          liste = liste.map((l: any) => ({ ...l, enCours: l['id'] === courante }));
+
+          liste = liste.map((l: any) => ({
+            ...l,
+            enCours: l['id'] === courante
+          }));
         }
 
         this.donnees.update((d) => ({
           ...d,
           [id]: liste,
         }));
+
       },
 
       error: (err: any) => {
         console.error(`Erreur chargement ${id}`, err);
       },
+
     });
   }
 
-  // MESSAGE D'ERREUR LISIBLE (texte du serveur si disponible)
+  // MESSAGE D'ERREUR
   private messageErreur(err: any, defaut: string): string {
+
     if (typeof err === 'string') return err;
 
-    return err?.error?.message ?? err?.error?.error ?? defaut;
+    return (
+      err?.error?.message ??
+      err?.error?.error ??
+      defaut
+    );
   }
 
   // OPTIONS DES LISTES DÉROULANTES
@@ -504,39 +573,53 @@ export class Parametre implements OnInit {
   }
 
   libelle(source: string, id: any) {
+
     const l = this.options(source).find((x) => x['id'] == id);
 
     if (!l) return '-';
 
     return (
-      l[this.libelleCle[source]] ?? l['libelle'] ?? l['libelleLong'] ?? l['libelleCourt'] ?? '-'
+      l[this.libelleCle[source]] ??
+      l['libelle'] ??
+      l['libelleLong'] ??
+      l['libelleCourt'] ??
+      '-'
     );
   }
 
   // CONFIRMATION
   valeurConfirmation(champ: Champ): string {
+
     const valeur = this.form.get(champ.cle)?.value;
 
-    if (champ.type === 'password') return valeur ? '••••••' : '-';
+    if (champ.type === 'password') {
+      return valeur ? '••••••' : '-';
+    }
 
     if (champ.type === 'select') {
       return this.libelle(champ.source!, valeur);
     }
 
-    return valeur === null || valeur === undefined || valeur === '' ? '-' : String(valeur);
+    return valeur === null || valeur === undefined || valeur === ''
+      ? '-'
+      : String(valeur);
   }
 
   libelleConfirmation(): string {
+
     const champLibelle = this.actif().champs.find((champ) =>
-      champ.cle.toLowerCase().includes('libelle'),
+      champ.cle.toLowerCase().includes('libelle')
     );
 
     const champAffiche = champLibelle ?? this.actif().champs[0];
 
-    return champAffiche ? this.valeurConfirmation(champAffiche) : '-';
+    return champAffiche
+      ? this.valeurConfirmation(champAffiche)
+      : '-';
   }
 
   nomElementConfirmation(): string {
+
     const noms: Record<string, string> = {
       annee: 'l’année',
       categorie: 'la catégorie',
@@ -555,18 +638,28 @@ export class Parametre implements OnInit {
 
   // CHANGEMENT D'ONGLET
   choisir(id: string) {
+
     this.actifId.set(id);
+
     this.charger(id);
   }
 
   // OUVERTURE DU FORMULAIRE
   ouvrir(ligne?: Ligne) {
+
+    this.erreurFormulaire.set(null);
+
     const p = this.actif();
 
     const controles: Record<string, any> = {};
 
     for (const c of p.champs) {
-      controles[c.cle] = [ligne?.[c.cle] ?? '', c.requis ? Validators.required : []];
+
+      controles[c.cle] = [
+        ligne?.[c.cle] ?? '',
+        c.requis ? Validators.required : []
+      ];
+
     }
 
     if (p.statut) {
@@ -583,22 +676,28 @@ export class Parametre implements OnInit {
     this.modal().nativeElement.showModal();
   }
 
+  // FERMETURE
   fermer() {
+
     this.modal().nativeElement.close();
 
     this.modalOuvert.set(false);
     this.confirmationOuverte.set(false);
 
     this.editId.set(null);
+
+    this.erreurFormulaire.set(null);
   }
 
   clicFond(e: MouseEvent) {
+
     if (e.target === this.modal().nativeElement) {
       this.fermer();
     }
   }
 
   clicFondConfirmation(e: MouseEvent) {
+
     if (e.target === this.confirmationModal().nativeElement) {
       this.annulerConfirmation();
     }
@@ -606,6 +705,7 @@ export class Parametre implements OnInit {
 
   // DEMANDER CONFIRMATION
   demanderConfirmation() {
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -617,15 +717,60 @@ export class Parametre implements OnInit {
   }
 
   annulerConfirmation() {
+
     this.confirmationModal().nativeElement.close();
 
     this.confirmationOuverte.set(false);
   }
 
+  // VÉRIFICATION DES DOUBLONS
+  private doublon(): string | null {
+
+    const cle = this.cleUnique[this.actifId()];
+
+    if (!cle) return null;
+
+    const saisie = String(
+      this.form.get(cle)?.value ?? ''
+    ).trim();
+
+    if (!saisie) return null;
+
+    const existe = this.lignes().some(
+      (l) =>
+        l['id'] !== this.editId() &&
+        String(l[cle] ?? '')
+          .trim()
+          .toLowerCase() === saisie.toLowerCase()
+    );
+
+    return existe ? saisie : null;
+  }
+
   // ENREGISTREMENT
   enregistrer() {
+
+    this.erreurFormulaire.set(null);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+
+    // VÉRIFICATION DES DOUBLONS
+    const valeurDoublon = this.doublon();
+
+    if (valeurDoublon) {
+
+      const nom = this.nomElementConfirmation();
+
+      const nomMajuscule =
+        nom.charAt(0).toUpperCase() + nom.slice(1);
+
+      this.erreurFormulaire.set(
+        `${nomMajuscule} « ${valeurDoublon} » est déjà enregistré(e).`
+      );
+
       return;
     }
 
@@ -638,36 +783,44 @@ export class Parametre implements OnInit {
   }
 
   confirmerEnregistrement() {
+
     this.annulerConfirmation();
 
     this.enregistrerDefinitivement();
   }
 
+  // ENREGISTREMENT DÉFINITIF
   private enregistrerDefinitivement() {
+
     const id = this.actifId();
+
     const titre = this.actif().label;
 
-    const valeurs = {
+    const valeurs: Record<string, any> = {
       ...this.form.getRawValue(),
     };
 
     // CONVERSION DES IDENTIFIANTS EN NOMBRES
     for (const champ of this.actif().champs) {
+
       if (
         (champ.type === 'number' || champ.type === 'select') &&
         valeurs[champ.cle] !== '' &&
         valeurs[champ.cle] !== null
       ) {
+
         const valeur = Number(valeurs[champ.cle]);
 
         if (!Number.isNaN(valeur)) {
           valeurs[champ.cle] = valeur;
         }
+
       }
     }
 
-    // LE STATUT « EN COURS » N'EXISTE PAS CÔTÉ API : on le garde à part
+    // LE STATUT EN COURS N'EXISTE PAS CÔTÉ API
     const enCours = !!valeurs['enCours'];
+
     delete valeurs['enCours'];
 
     const editId = this.editId();
@@ -675,65 +828,115 @@ export class Parametre implements OnInit {
     const a = this.api[id];
 
     if (a) {
+
       console.log('Données envoyées à l’API :', valeurs);
 
-      const requete = editId !== null ? a.update(editId, valeurs) : a.create(valeurs);
+      const requete =
+        editId !== null
+          ? a.update(editId, valeurs)
+          : a.create(valeurs);
 
       requete.subscribe({
+
         next: (response: any) => {
+
           console.log('Enregistrement réussi :', response);
 
-          // Mémoriser l'année en cours
+          // MÉMORISER L'ANNÉE EN COURS
           if (id === 'annee') {
+
             const idAnnee = editId ?? response?.id ?? null;
 
             if (enCours) {
+
               if (idAnnee !== null) {
+
                 this.anneeEnCoursId.set(idAnnee);
-                localStorage.setItem(this.CLE_ANNEE, String(idAnnee));
+
+                localStorage.setItem(
+                  this.CLE_ANNEE,
+                  String(idAnnee)
+                );
+
               } else {
-                this.libelleEnAttente = String(valeurs['libelleAnnee']);
+
+                this.libelleEnAttente =
+                  String(valeurs['libelleAnnee']);
+
               }
-            } else if (editId !== null && editId === this.anneeEnCoursId()) {
+
+            } else if (
+              editId !== null &&
+              editId === this.anneeEnCoursId()
+            ) {
+
               this.fixerAnneeEnCours(null);
+
             }
           }
 
           this.charger(id);
+
           this.fermer();
 
-          this.toast.success(editId !== null ? 'Modifié avec succès' : 'Ajouté avec succès', titre);
+          this.toast.success(
+            editId !== null
+              ? 'Modifié avec succès'
+              : 'Ajouté avec succès',
+            titre
+          );
+
         },
 
         error: (err: any) => {
+
           console.error(`Erreur enregistrement ${id}`, err);
+
           console.error('Détail du serveur :', err.error);
 
-          this.toast.error(this.messageErreur(err, "L'enregistrement a échoué"), titre);
+          // AFFICHER L'ERREUR DANS LA MODALE
+          this.erreurFormulaire.set(
+            this.messageErreur(
+              err,
+              "L'enregistrement a échoué"
+            )
+          );
+
         },
+
       });
 
-      return;
     }
   }
 
   // DÉFINIR ANNÉE EN COURS
   definirEnCours(ligneId: number) {
+
     this.fixerAnneeEnCours(ligneId);
 
-    this.toast.success('Année en cours définie', this.actif().label);
+    this.toast.success(
+      'Année en cours définie',
+      this.actif().label
+    );
   }
 
   // SUPPRESSION
   supprimer(ligneId: number) {
+
     const id = this.actifId();
+
     const titre = this.actif().label;
 
-    if (id === 'annee' && ligneId === this.anneeEnCoursId()) {
+    if (
+      id === 'annee' &&
+      ligneId === this.anneeEnCoursId()
+    ) {
+
       this.toast.warning(
         "Impossible de supprimer l'année en cours. Définissez d'abord une autre année en cours.",
-        titre,
+        titre
       );
+
       return;
     }
 
@@ -744,20 +947,33 @@ export class Parametre implements OnInit {
     const a = this.api[id];
 
     if (a) {
+
       a.delete(ligneId).subscribe({
+
         next: () => {
+
           this.charger(id);
-          this.toast.success('Supprimé avec succès', titre);
+
+          this.toast.success(
+            'Supprimé avec succès',
+            titre
+          );
+
         },
 
         error: (err: any) => {
+
           console.error(`Erreur suppression ${id}`, err);
 
-          this.toast.error(this.messageErreur(err, 'La suppression a échoué'), titre);
+          this.toast.error(
+            this.messageErreur(err, 'La suppression a échoué'),
+            titre
+          );
+
         },
+
       });
 
-      return;
     }
   }
 }
