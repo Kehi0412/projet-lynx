@@ -87,6 +87,30 @@
   font-weight: 700;
 }
 
+/* ---------- Horloge (date et heure en temps réel) ---------- */
+.horloge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 8px;
+  padding-right: 18px;
+  border-right: 1px solid rgb(255 255 255 / 40%);
+  color: #fff;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.horloge-date {
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.horloge-heure {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums; /* les chiffres gardent la même largeur */
+  letter-spacing: .04em;
+}
+
 .logout-icon {
   margin-left: 12px;
   padding: 5px 8px;
@@ -262,8 +286,15 @@
     font-size: 12px;
   }
 
-  .topbar-user > span:nth-child(2) {
+  /* on masque le nom, et la date de l'horloge (l'heure reste visible) */
+  .user-info,
+  .horloge-date {
     display: none;
+  }
+
+  .horloge {
+    padding-right: 10px;
+    margin-right: 0;
   }
 
   .app-shell {
@@ -373,11 +404,11 @@ a.active, .menu-item.active {
   font-weight: 600;
 }
 
-  .nav-parent {
-    font-size: 16px;
-    font-weight: 700;
-    padding: 13px 14px;
-  }
+.nav-parent {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 13px 14px;
+}
 
 
 .fleche {
@@ -425,10 +456,12 @@ a.active, .menu-item.active {
   color: #222;
   text-decoration: none;
 }
-.sous-lien.active { color: var(--linx-orange-dark); }.mission-nav,
-                                                     .parametres-nav {
-                                                       display: block;
-                                                     }
+.sous-lien.active { color: var(--linx-orange-dark); }
+
+.mission-nav,
+.parametres-nav {
+  display: block;
+}
 
 .nav-link {
   display: flex;

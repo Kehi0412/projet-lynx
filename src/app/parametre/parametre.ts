@@ -1,21 +1,9 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  computed,
-  inject,
-  signal,
-  viewChild
-} from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 // SERVICES
 import { AnneeExerciceService } from '../back-end/services/parametre/anneeExercice.service';
@@ -48,7 +36,6 @@ interface Param {
 type Ligne = Record<string, any>;
 
 export const PARAMS: Param[] = [
-
   // ANNÉE D'EXERCICE
   {
     id: 'annee',
@@ -56,8 +43,8 @@ export const PARAMS: Param[] = [
     statut: true,
     champs: [
       { cle: 'libelleAnnee', label: 'Libellé', requis: true },
-      { cle: 'theme', label: 'Thème' }
-    ]
+      { cle: 'theme', label: 'Thème' },
+    ],
   },
 
   // CATÉGORIE
@@ -71,9 +58,9 @@ export const PARAMS: Param[] = [
         cle: 'idTypeMission',
         label: 'Type de mission',
         type: 'number',
-        requis: true
-      }
-    ]
+        requis: true,
+      },
+    ],
   },
 
   // TYPE DE MISSION
@@ -82,8 +69,8 @@ export const PARAMS: Param[] = [
     label: 'Type de mission',
     champs: [
       { cle: 'codeTypeMission', label: 'Code type de mission', requis: true },
-      { cle: 'categorieMission', label: 'Catégorie de mission', requis: true }
-    ]
+      { cle: 'categorieMission', label: 'Catégorie de mission', requis: true },
+    ],
   },
 
   // AGENT
@@ -97,15 +84,15 @@ export const PARAMS: Param[] = [
       {
         cle: 'motDePasse',
         label: 'Mot de passe',
-        type: 'password'
+        type: 'password',
       },
       {
         cle: 'dateNaissance',
         label: 'Date de naissance',
         type: 'date',
-        requis: true
-      }
-    ]
+        requis: true,
+      },
+    ],
   },
 
   // POSTE
@@ -120,27 +107,27 @@ export const PARAMS: Param[] = [
         label: 'Libellé long',
         type: 'textarea',
         requis: true,
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'matriculeResponsable',
-        label: 'Matricule du responsable'
+        label: 'Matricule du responsable',
       },
       {
         cle: 'typePosteId',
         label: 'Type de poste',
         type: 'select',
         source: 'typeposte',
-        requis: true
+        requis: true,
       },
       {
         cle: 'processusId',
         label: 'Processus',
         type: 'select',
         source: 'processus',
-        requis: true
-      }
-    ]
+        requis: true,
+      },
+    ],
   },
 
   // PROCESSUS
@@ -155,9 +142,9 @@ export const PARAMS: Param[] = [
         cle: 'libelleLongProcessus',
         label: 'Libellé long',
         type: 'textarea',
-        pleine: true
-      }
-    ]
+        pleine: true,
+      },
+    ],
   },
 
   // RECOMMANDATION
@@ -169,55 +156,55 @@ export const PARAMS: Param[] = [
         cle: 'libelle',
         label: 'Libellé',
         requis: true,
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'constat',
         label: 'Constat',
         type: 'textarea',
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'causeConstat',
         label: 'Cause du constat',
         type: 'textarea',
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'dateDebut',
         label: 'Date de début',
-        type: 'date'
+        type: 'date',
       },
       {
         cle: 'dateFin',
         label: 'Date de fin',
-        type: 'date'
+        type: 'date',
       },
       {
         cle: 'objectif',
         label: 'Objectif',
         type: 'textarea',
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'preuveAttendue',
         label: 'Preuve attendue',
         type: 'textarea',
-        pleine: true
+        pleine: true,
       },
       {
         cle: 'idSousFamille',
         label: 'Identifiant de sous-famille',
         type: 'number',
-        requis: true
+        requis: true,
       },
       {
         cle: 'idMission',
         label: 'Identifiant de mission',
         type: 'number',
-        requis: true
-      }
-    ]
+        requis: true,
+      },
+    ],
   },
 
   // FAMILLE
@@ -233,9 +220,9 @@ export const PARAMS: Param[] = [
         cle: 'idSousFamille',
         label: 'Sous-famille',
         type: 'number',
-        requis: true
-      }
-    ]
+        requis: true,
+      },
+    ],
   },
 
   // SOUS-FAMILLE
@@ -249,9 +236,9 @@ export const PARAMS: Param[] = [
         cle: 'typeSousFamille',
         label: 'Type',
         type: 'select',
-        source: 'typeElement'
-      }
-    ]
+        source: 'typeElement',
+      },
+    ],
   },
 
   // TYPE DE POSTE
@@ -265,24 +252,22 @@ export const PARAMS: Param[] = [
         cle: 'libelleLongType',
         label: 'Libellé long',
         type: 'textarea',
-        pleine: true
-      }
-    ]
-  }
-
+        pleine: true,
+      },
+    ],
+  },
 ];
 
 @Component({
   selector: 'app-parametre',
   imports: [ReactiveFormsModule],
   templateUrl: './parametre.html',
-  styleUrl: './parametre.css'
+  styleUrl: './parametre.css',
 })
-
 export class Parametre implements OnInit {
-
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
+  private toast = inject(ToastrService);
 
   // SERVICES
   private anneeService = inject(AnneeExerciceService);
@@ -298,85 +283,82 @@ export class Parametre implements OnInit {
 
   // CONFIGURATION DES API
   private api: Record<string, any> = {
-
     annee: {
       getAll: () => this.anneeService.getAllAnnees(),
       create: (d: any) => this.anneeService.createAnnee(d),
       update: (id: any, d: any) => this.anneeService.updateAnnee(id, d),
-      delete: (id: any) => this.anneeService.deleteAnnee(id)
+      delete: (id: any) => this.anneeService.deleteAnnee(id),
     },
 
     categorie: {
       getAll: () => this.categorieService.getAll(),
       create: (d: any) => this.categorieService.create(d),
       update: (id: any, d: any) => this.categorieService.update(id, d),
-      delete: (id: any) => this.categorieService.delete(id)
+      delete: (id: any) => this.categorieService.delete(id),
     },
 
     type: {
       getAll: () => this.typeMissionService.getAllTypeMissions(),
       create: (d: any) => this.typeMissionService.createTypeMission(d),
       update: (id: any, d: any) => this.typeMissionService.updateTypeMission(id, d),
-      delete: (id: any) => this.typeMissionService.deleteTypeMission(id)
+      delete: (id: any) => this.typeMissionService.deleteTypeMission(id),
     },
 
     agent: {
       getAll: () => this.agentService.getAll(),
       create: (d: any) => this.agentService.create(d),
       update: (id: any, d: any) => this.agentService.update(id, d),
-      delete: (id: any) => this.agentService.delete(id)
+      delete: (id: any) => this.agentService.delete(id),
     },
 
     typeposte: {
       getAll: () => this.typePosteService.getAll(),
       create: (d: any) => this.typePosteService.create(d),
       update: (id: any, d: any) => this.typePosteService.update(id, d),
-      delete: (id: any) => this.typePosteService.delete(id)
+      delete: (id: any) => this.typePosteService.delete(id),
     },
 
     poste: {
       getAll: () => this.posteService.getAll(),
       create: (d: any) => this.posteService.create(d),
       update: (id: any, d: any) => this.posteService.update(id, d),
-      delete: (id: any) => this.posteService.delete(id)
+      delete: (id: any) => this.posteService.delete(id),
     },
 
     processus: {
       getAll: () => this.processusService.getAll(),
       create: (d: any) => this.processusService.create(d),
       update: (id: any, d: any) => this.processusService.update(id, d),
-      delete: (id: any) => this.processusService.delete(id)
+      delete: (id: any) => this.processusService.delete(id),
     },
 
     famille: {
       getAll: () => this.familleService.getAll(),
       create: (d: any) => this.familleService.create(d),
       update: (id: any, d: any) => this.familleService.update(id, d),
-      delete: (id: any) => this.familleService.delete(id)
+      delete: (id: any) => this.familleService.delete(id),
     },
 
     sousfamille: {
       getAll: () => this.sousFamilleService.getAll(),
       create: (d: any) => this.sousFamilleService.create(d),
       update: (id: any, d: any) => this.sousFamilleService.update(id, d),
-      delete: (id: any) => this.sousFamilleService.delete(id)
+      delete: (id: any) => this.sousFamilleService.delete(id),
     },
 
     recommandation: {
       getAll: () => this.recommandationService.getAll(),
       create: (d: any) => this.recommandationService.create(d),
       update: (id: any, d: any) => this.recommandationService.update(id, d),
-      delete: (id: any) => this.recommandationService.delete(id)
-    }
-
+      delete: (id: any) => this.recommandationService.delete(id),
+    },
   };
 
   params = PARAMS;
 
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
 
-  confirmationModal =
-    viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
+  confirmationModal = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
 
   modalOuvert = signal(false);
   confirmationOuverte = signal(false);
@@ -387,12 +369,9 @@ export class Parametre implements OnInit {
 
   actifId = signal('annee');
 
-  actif = computed(
-    () => this.params.find((p) => p.id === this.actifId())!
-  );
+  actif = computed(() => this.params.find((p) => p.id === this.actifId())!);
 
   donnees = signal<Record<string, Ligne[]>>({
-
     annee: [],
     categorie: [],
     type: [],
@@ -408,18 +387,13 @@ export class Parametre implements OnInit {
       { id: 'FAMILLE_RISQUE', libelle: 'Famille risque' },
       { id: 'SOUS_FAMILLE_RISQUE', libelle: 'Sous-famille risque' },
       { id: 'FAMILLE_CONSTAT', libelle: 'Famille constat' },
-      { id: 'SOUS_FAMILLE_CONSTAT', libelle: 'Sous-famille constat' }
-    ]
-
+      { id: 'SOUS_FAMILLE_CONSTAT', libelle: 'Sous-famille constat' },
+    ],
   });
 
-  lignes = computed(
-    () => this.donnees()[this.actifId()] ?? []
-  );
+  lignes = computed(() => this.donnees()[this.actifId()] ?? []);
 
-  anneeEnCours = computed(
-    () => this.donnees()['annee'].find((l) => l['enCours'])
-  );
+  anneeEnCours = computed(() => this.donnees()['annee'].find((l) => l['enCours']));
 
   form: FormGroup = this.fb.group({});
 
@@ -428,20 +402,37 @@ export class Parametre implements OnInit {
     famille: 'libelle',
     typeElement: 'libelle',
     typeposte: 'libelleCourtType',
-    processus: 'libelle'
+    processus: 'libelle',
   };
+
+  // ANNÉE EN COURS : mémorisée dans le navigateur (le back-end n'a pas ce champ)
+  private readonly CLE_ANNEE = 'linx_annee_en_cours';
+  private libelleEnAttente: string | null = null;
+
+  anneeEnCoursId = signal<number | null>(
+    Number(localStorage.getItem('linx_annee_en_cours')) || null,
+  );
+
+  private fixerAnneeEnCours(id: number | null) {
+    this.anneeEnCoursId.set(id);
+
+    if (id === null) localStorage.removeItem(this.CLE_ANNEE);
+    else localStorage.setItem(this.CLE_ANNEE, String(id));
+
+    this.donnees.update((d) => ({
+      ...d,
+      annee: d['annee'].map((l) => ({ ...l, enCours: l['id'] === id })),
+    }));
+  }
 
   // INITIALISATION
   ngOnInit() {
-
     this.route.queryParamMap.subscribe((queryParams) => {
-
       const module = queryParams.get('module');
 
       if (module && this.params.some((param) => param.id === module)) {
         this.actifId.set(module);
       }
-
     });
 
     this.charger('annee');
@@ -454,39 +445,57 @@ export class Parametre implements OnInit {
     this.charger('famille');
     this.charger('sousfamille');
     this.charger('recommandation');
-
   }
 
   // CHARGEMENT API
   charger(id: string) {
-
     const a = this.api[id];
 
     if (!a) return;
 
     a.getAll().subscribe({
-
       next: (data: any) => {
-
         console.log(`Réponse API ${id} :`, data);
 
-        const liste = Array.isArray(data)
-          ? data
-          : (data?.content ?? data?.data ?? []);
+        let liste = Array.isArray(data) ? data : (data?.content ?? data?.data ?? []);
+
+        if (id === 'annee') {
+          // Une année vient d'être créée avec « en cours » coché : on la retrouve par son libellé
+          if (this.libelleEnAttente) {
+            const trouvee = liste
+              .filter((l: any) => l['libelleAnnee'] === this.libelleEnAttente)
+              .sort((x: any, y: any) => y['id'] - x['id'])[0];
+
+            this.libelleEnAttente = null;
+
+            if (trouvee) {
+              this.anneeEnCoursId.set(trouvee['id']);
+              localStorage.setItem(this.CLE_ANNEE, String(trouvee['id']));
+            }
+          }
+
+          // On applique le statut mémorisé
+          const courante = this.anneeEnCoursId();
+          liste = liste.map((l: any) => ({ ...l, enCours: l['id'] === courante }));
+        }
 
         this.donnees.update((d) => ({
           ...d,
-          [id]: liste
+          [id]: liste,
         }));
-
       },
 
       error: (err: any) => {
         console.error(`Erreur chargement ${id}`, err);
-      }
-
+      },
     });
+  }
 
+  // MESSAGE D'ERREUR LISIBLE (texte du serveur si disponible)
+  private messageErreur(err: any, defaut: string): string {
+    if (typeof err === 'string') return err;
+
+    return err?.error?.message ?? err?.error?.error ?? defaut;
   }
 
   // OPTIONS DES LISTES DÉROULANTES
@@ -495,26 +504,17 @@ export class Parametre implements OnInit {
   }
 
   libelle(source: string, id: any) {
-
-    const l = this.options(source).find(
-      (x) => x['id'] == id
-    );
+    const l = this.options(source).find((x) => x['id'] == id);
 
     if (!l) return '-';
 
     return (
-      l[this.libelleCle[source]] ??
-      l['libelle'] ??
-      l['libelleLong'] ??
-      l['libelleCourt'] ??
-      '-'
+      l[this.libelleCle[source]] ?? l['libelle'] ?? l['libelleLong'] ?? l['libelleCourt'] ?? '-'
     );
-
   }
 
   // CONFIRMATION
   valeurConfirmation(champ: Champ): string {
-
     const valeur = this.form.get(champ.cle)?.value;
 
     if (champ.type === 'password') return valeur ? '••••••' : '-';
@@ -523,200 +523,151 @@ export class Parametre implements OnInit {
       return this.libelle(champ.source!, valeur);
     }
 
-    return valeur === null || valeur === undefined || valeur === ''
-      ? '-'
-      : String(valeur);
-
+    return valeur === null || valeur === undefined || valeur === '' ? '-' : String(valeur);
   }
 
   libelleConfirmation(): string {
-
-    const champLibelle = this.actif().champs.find(
-      (champ) => champ.cle.toLowerCase().includes('libelle')
+    const champLibelle = this.actif().champs.find((champ) =>
+      champ.cle.toLowerCase().includes('libelle'),
     );
 
-    const champAffiche =
-      champLibelle ?? this.actif().champs[0];
+    const champAffiche = champLibelle ?? this.actif().champs[0];
 
-    return champAffiche
-      ? this.valeurConfirmation(champAffiche)
-      : '-';
-
+    return champAffiche ? this.valeurConfirmation(champAffiche) : '-';
   }
 
   nomElementConfirmation(): string {
-
     const noms: Record<string, string> = {
-
-      annee: "l’année",
+      annee: 'l’année',
       categorie: 'la catégorie',
       type: 'le type de mission',
-      agent: "l’agent",
+      agent: 'l’agent',
       poste: 'le poste',
       processus: 'le processus',
       recommandation: 'la recommandation',
       famille: 'la famille',
       sousfamille: 'la sous-famille',
-      typeposte: 'le type de poste'
-
+      typeposte: 'le type de poste',
     };
 
-    return noms[this.actifId()] ??
-      this.actif().label.toLowerCase();
-
+    return noms[this.actifId()] ?? this.actif().label.toLowerCase();
   }
 
   // CHANGEMENT D'ONGLET
   choisir(id: string) {
-
     this.actifId.set(id);
     this.charger(id);
-
   }
 
   // OUVERTURE DU FORMULAIRE
   ouvrir(ligne?: Ligne) {
-
     const p = this.actif();
 
     const controles: Record<string, any> = {};
 
     for (const c of p.champs) {
-
-      controles[c.cle] = [
-        ligne?.[c.cle] ?? '',
-        c.requis ? Validators.required : []
-      ];
-
+      controles[c.cle] = [ligne?.[c.cle] ?? '', c.requis ? Validators.required : []];
     }
 
     if (p.statut) {
-      controles['enCours'] = [
-        ligne?.['enCours'] ?? false
-      ];
+      controles['enCours'] = [ligne?.['enCours'] ?? false];
     }
 
     this.form = this.fb.group(controles);
 
-    this.editId.set(
-      ligne ? Number(ligne['id']) : null
-    );
+    this.editId.set(ligne ? Number(ligne['id']) : null);
 
     this.confirmationOuverte.set(false);
     this.modalOuvert.set(true);
 
     this.modal().nativeElement.showModal();
-
   }
 
   fermer() {
-
     this.modal().nativeElement.close();
 
     this.modalOuvert.set(false);
     this.confirmationOuverte.set(false);
 
     this.editId.set(null);
-
   }
 
   clicFond(e: MouseEvent) {
-
     if (e.target === this.modal().nativeElement) {
       this.fermer();
     }
-
   }
 
   clicFondConfirmation(e: MouseEvent) {
-
     if (e.target === this.confirmationModal().nativeElement) {
       this.annulerConfirmation();
     }
-
   }
 
   // DEMANDER CONFIRMATION
   demanderConfirmation() {
-
     if (this.form.invalid) {
-
       this.form.markAllAsTouched();
       return;
-
     }
 
     this.confirmationOuverte.set(true);
 
     this.confirmationModal().nativeElement.showModal();
-
   }
 
   annulerConfirmation() {
-
     this.confirmationModal().nativeElement.close();
 
     this.confirmationOuverte.set(false);
-
   }
 
   // ENREGISTREMENT
   enregistrer() {
-
     if (this.form.invalid) {
-
       this.form.markAllAsTouched();
       return;
-
     }
 
     if (this.editId() === null) {
-
       this.demanderConfirmation();
       return;
-
     }
 
     this.enregistrerDefinitivement();
-
   }
 
   confirmerEnregistrement() {
-
     this.annulerConfirmation();
 
     this.enregistrerDefinitivement();
-
   }
 
   private enregistrerDefinitivement() {
-
     const id = this.actifId();
+    const titre = this.actif().label;
 
     const valeurs = {
-      ...this.form.getRawValue()
+      ...this.form.getRawValue(),
     };
 
     // CONVERSION DES IDENTIFIANTS EN NOMBRES
     for (const champ of this.actif().champs) {
-
       if (
         (champ.type === 'number' || champ.type === 'select') &&
         valeurs[champ.cle] !== '' &&
         valeurs[champ.cle] !== null
       ) {
-
         const valeur = Number(valeurs[champ.cle]);
 
         if (!Number.isNaN(valeur)) {
           valeurs[champ.cle] = valeur;
         }
-
       }
-
     }
 
-    // NE PAS ENVOYER LE STATUT LOCAL À L'API
+    // LE STATUT « EN COURS » N'EXISTE PAS CÔTÉ API : on le garde à part
+    const enCours = !!valeurs['enCours'];
     delete valeurs['enCours'];
 
     const editId = this.editId();
@@ -724,84 +675,89 @@ export class Parametre implements OnInit {
     const a = this.api[id];
 
     if (a) {
-
       console.log('Données envoyées à l’API :', valeurs);
 
-      const requete = editId !== null
-        ? a.update(editId, valeurs)
-        : a.create(valeurs);
+      const requete = editId !== null ? a.update(editId, valeurs) : a.create(valeurs);
 
       requete.subscribe({
-
         next: (response: any) => {
-
           console.log('Enregistrement réussi :', response);
+
+          // Mémoriser l'année en cours
+          if (id === 'annee') {
+            const idAnnee = editId ?? response?.id ?? null;
+
+            if (enCours) {
+              if (idAnnee !== null) {
+                this.anneeEnCoursId.set(idAnnee);
+                localStorage.setItem(this.CLE_ANNEE, String(idAnnee));
+              } else {
+                this.libelleEnAttente = String(valeurs['libelleAnnee']);
+              }
+            } else if (editId !== null && editId === this.anneeEnCoursId()) {
+              this.fixerAnneeEnCours(null);
+            }
+          }
 
           this.charger(id);
           this.fermer();
 
+          this.toast.success(editId !== null ? 'Modifié avec succès' : 'Ajouté avec succès', titre);
         },
 
         error: (err: any) => {
-
           console.error(`Erreur enregistrement ${id}`, err);
           console.error('Détail du serveur :', err.error);
 
-        }
-
+          this.toast.error(this.messageErreur(err, "L'enregistrement a échoué"), titre);
+        },
       });
 
       return;
-
     }
-
   }
 
   // DÉFINIR ANNÉE EN COURS
   definirEnCours(ligneId: number) {
+    this.fixerAnneeEnCours(ligneId);
 
-    this.donnees.update((d) => ({
-
-      ...d,
-
-      annee: d['annee'].map((l) => ({
-        ...l,
-        enCours: l['id'] === ligneId
-      }))
-
-    }));
-
+    this.toast.success('Année en cours définie', this.actif().label);
   }
 
   // SUPPRESSION
   supprimer(ligneId: number) {
+    const id = this.actifId();
+    const titre = this.actif().label;
+
+    if (id === 'annee' && ligneId === this.anneeEnCoursId()) {
+      this.toast.warning(
+        "Impossible de supprimer l'année en cours. Définissez d'abord une autre année en cours.",
+        titre,
+      );
+      return;
+    }
 
     if (!confirm('Voulez-vous vraiment supprimer cet élément ?')) {
       return;
     }
 
-    const id = this.actifId();
-
     const a = this.api[id];
 
     if (a) {
-
       a.delete(ligneId).subscribe({
-
         next: () => {
           this.charger(id);
+          this.toast.success('Supprimé avec succès', titre);
         },
 
         error: (err: any) => {
           console.error(`Erreur suppression ${id}`, err);
-        }
 
+          this.toast.error(this.messageErreur(err, 'La suppression a échoué'), titre);
+        },
       });
 
       return;
-
     }
-
   }
-
 }

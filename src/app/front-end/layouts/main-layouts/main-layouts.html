@@ -5,13 +5,19 @@
   </a>
   <div class="topbar-poste">{{ poste }}</div>
   <div class="topbar-user">
+
+    <div class="horloge" aria-live="off">
+      <span class="horloge-date">{{ dateAffichee() }}</span>
+      <strong class="horloge-heure">{{ heureAffichee() }}</strong>
+    </div>
+
     <span class="user-avatar" aria-hidden="true">
-  <svg viewBox="0 0 24 24" fill="#bbb">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M4 20c0-4 4-6 8-6s8 2 8 6z"/>
-  </svg>
-</span>
-    <span><strong>Administrateur</strong><small>Profil {{ profil }}</small></span>
+      <svg viewBox="0 0 24 24" fill="#bbb">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6z"/>
+      </svg>
+    </span>
+    <span class="user-info"><strong>Administrateur</strong><small>Profil {{ profil }}</small></span>
 
     <button type="button" class="logout-icon" (click)="deconnexion()" aria-label="Déconnexion" title="Déconnexion">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
@@ -42,9 +48,9 @@
       </div>
 
       <div class="parametres-nav">
-      <a routerLink="/home/rapports" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
-      </a>
+        <a routerLink="/home/rapports" routerLinkActive="active">
+          <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
+        </a>
       </div>
       <div class="parametres-nav">
         <a routerLink="/home/parametres" routerLinkActive="active" (click)="basculerParametres()"

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
 import {
   ActivatedRoute,
   Router,
@@ -14,7 +14,7 @@ import { PARAMS } from '../../../parametre/parametre';
   styleUrl: './main-layouts.css',
   templateUrl: './main-layouts.html',
 })
-export class MainLayouts {
+export class MainLayouts implements OnDestroy {
   readonly profil = 'ADMINISTRATEUR';
   readonly poste = 'Direction des Systemes Informatiques et Numer...'; // garde ta ligne d'origine complète
   readonly parametres = PARAMS;
@@ -24,6 +24,10 @@ export class MainLayouts {
   readonly missionOuvert = signal(false);
   readonly inspectionOuvert = signal(false);
   readonly auditOuvert = signal(false);
+
+  // Date et heure en temps réel (mises à jour chaque seconde)
+  readonly maintenant = signal(new Date());
+  private readonly horloge = setInterval(() => this.maintenant.set(new Date()), 1000);
 
   constructor(
     private router: Router,
@@ -36,6 +40,23 @@ export class MainLayouts {
         this.parametresOuverts.set(true);
       }
     });
+  }
+
+  dateAffichee() {
+    return this.maintenant().toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  heureAffichee() {
+    return this.maintenant().toLocaleTimeString('fr-FR');
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.horloge); // arrête le minuteur quand on quitte la page
   }
 
   basculerParametres() {
