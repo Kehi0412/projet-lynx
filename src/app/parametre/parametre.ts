@@ -1,18 +1,39 @@
-import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
+
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 import { ActivatedRoute } from '@angular/router';
+
+// SERVICES
 import { AnneeExerciceService } from '../back-end/services/parametre/anneeExercice.service';
+import { AgentService } from '../back-end/services/parametre/agent.service';
+import { CategorieService } from '../back-end/services/parametre/categorie.service';
 import { FamilleService } from '../back-end/services/parametre/famille.service';
 import { PosteService } from '../back-end/services/parametre/poste.service';
 import { ProcessusService } from '../back-end/services/parametre/processus.service';
 import { RecomandationService } from '../back-end/services/parametre/recomandation.service';
+import { SousFamilleService } from '../back-end/services/parametre/sousFamille.service';
 import { TypeMissionService } from '../back-end/services/parametre/typeMission.service';
 import { TypePosteService } from '../back-end/services/parametre/typePoste.service';
+
 interface Champ {
   cle: string;
   label: string;
   type?: 'text' | 'date' | 'textarea' | 'select' | 'password' | 'number';
-  source?: string; // pour 'select' : paramètre qui fournit les options
+  source?: string;
   requis?: boolean;
   pleine?: boolean;
 }
@@ -21,219 +42,360 @@ interface Param {
   id: string;
   label: string;
   champs: Champ[];
-  statut?: boolean; // gère la notion « en cours » (année d'exercice)
+  statut?: boolean;
 }
 
 type Ligne = Record<string, any>;
 
 export const PARAMS: Param[] = [
+
+  // ANNÉE D'EXERCICE
   {
-    // entité annee : Lib_ann, Thm_ann
     id: 'annee',
     label: "Année d'exercice",
     statut: true,
     champs: [
       { cle: 'libelleAnnee', label: 'Libellé', requis: true },
-      { cle: 'themeAnnee', label: 'Thème', requis: true },
-    ],
+      { cle: 'theme', label: 'Thème' }
+    ]
   },
+
+  // CATÉGORIE
   {
-    // pas d'entité dédiée dans le MCD : on utilise Cate_miss de type_mission
     id: 'categorie',
     label: 'Catégorie',
-    champs: [{ cle: 'Cate_miss', label: 'Catégorie de mission', requis: true, pleine: true }],
+    champs: [
+      { cle: 'nom', label: 'Nom', requis: true },
+      { cle: 'type', label: 'Type' },
+      {
+        cle: 'idTypeMission',
+        label: 'Type de mission',
+        type: 'number',
+        requis: true
+      }
+    ]
   },
+
+  // TYPE DE MISSION
   {
-    // entité type_mission : , codeTypeMissions
     id: 'type',
     label: 'Type de mission',
     champs: [
       { cle: 'codeTypeMission', label: 'Code type de mission', requis: true },
-      { cle: 'categorieMission', label: 'Catégorie de mission', requis: true },
-    ],
+      { cle: 'categorieMission', label: 'Catégorie de mission', requis: true }
+    ]
   },
+
+  // AGENT
   {
-    // entité agent : Cod_miss, D_db_miss, D_fin_miss
     id: 'agent',
     label: 'Agent',
     champs: [
       { cle: 'nom', label: 'Nom', requis: true },
       { cle: 'prenom', label: 'Prénom', requis: true },
       { cle: 'matricule', label: 'Matricule', requis: true },
-      { cle: 'motDePasse', label: 'Mot de passe', type: 'password', requis: true },
-      { cle: 'dateNaissance', label: 'Date de naissance', type: 'date', requis: true },
-    ],
+      {
+        cle: 'motDePasse',
+        label: 'Mot de passe',
+        type: 'password'
+      },
+      {
+        cle: 'dateNaissance',
+        label: 'Date de naissance',
+        type: 'date',
+        requis: true
+      }
+    ]
   },
+
+  // POSTE
   {
     id: 'poste',
     label: 'Poste',
     champs: [
-      { cle: 'codePoste', label: 'Code', requis: true },
-      { cle: 'libellePoste', label: 'Libellé', requis: true },
-    ],
+      { cle: 'codePoste', label: 'Code poste', requis: true },
+      { cle: 'libelleCourt', label: 'Libellé court', requis: true },
+      {
+        cle: 'libelleLong',
+        label: 'Libellé long',
+        type: 'textarea',
+        requis: true,
+        pleine: true
+      },
+      {
+        cle: 'matriculeResponsable',
+        label: 'Matricule du responsable'
+      },
+      {
+        cle: 'typePosteId',
+        label: 'Type de poste',
+        type: 'select',
+        source: 'typeposte',
+        requis: true
+      },
+      {
+        cle: 'processusId',
+        label: 'Processus',
+        type: 'select',
+        source: 'processus',
+        requis: true
+      }
+    ]
   },
+
+  // PROCESSUS
   {
     id: 'processus',
     label: 'Processus',
     champs: [
-      { cle: 'codeProcessus', label: 'Code', requis: true },
-      { cle: 'libelleProcessus', label: 'Libellé', requis: true },
-      { cle: 'libelleCourtProcessus', label: 'Libellé court', requis: true },
-      { cle: 'libelleLongProcessus', label: 'Libellé long', requis: true, pleine: true },
-    ],
+      { cle: 'code', label: 'Code', requis: true },
+      { cle: 'libelle', label: 'Libellé', requis: true },
+      { cle: 'libelleCourt', label: 'Libellé court' },
+      {
+        cle: 'libelleLongProcessus',
+        label: 'Libellé long',
+        type: 'textarea',
+        pleine: true
+      }
+    ]
   },
+
+  // RECOMMANDATION
   {
-    // entité recommandation
     id: 'recommandation',
     label: 'Recommandation',
     champs: [
-      { cle: 'libelleRecommandation', label: 'Libellé', requis: true, pleine: true },
       {
-        cle: 'constatRecommandation',
+        cle: 'libelle',
+        label: 'Libellé',
+        requis: true,
+        pleine: true
+      },
+      {
+        cle: 'constat',
         label: 'Constat',
         type: 'textarea',
-        requis: true,
-        pleine: true,
+        pleine: true
       },
       {
-        cle: 'causeConstatRecommandation',
+        cle: 'causeConstat',
         label: 'Cause du constat',
         type: 'textarea',
-        pleine: true,
+        pleine: true
       },
-      { cle: 'dateDebutRecommandation', label: 'Date de début', type: 'date', requis: true },
-      { cle: 'dateFinRecommandation', label: 'Date de fin', type: 'date', requis: true },
-      { cle: 'objectifRecommandation', label: 'Objectif', type: 'textarea', pleine: true },
       {
-        cle: 'preuveAttendueRecommandation',
+        cle: 'dateDebut',
+        label: 'Date de début',
+        type: 'date'
+      },
+      {
+        cle: 'dateFin',
+        label: 'Date de fin',
+        type: 'date'
+      },
+      {
+        cle: 'objectif',
+        label: 'Objectif',
+        type: 'textarea',
+        pleine: true
+      },
+      {
+        cle: 'preuveAttendue',
         label: 'Preuve attendue',
         type: 'textarea',
-        pleine: true,
+        pleine: true
       },
-      { cle: 'idSousFamille', label: 'Identifiant de sous-famille', type: 'number', requis: true },
-      { cle: 'idMission', label: 'Identifiant de mission', type: 'number', requis: true },
-    ],
+      {
+        cle: 'idSousFamille',
+        label: 'Identifiant de sous-famille',
+        type: 'number',
+        requis: true
+      },
+      {
+        cle: 'idMission',
+        label: 'Identifiant de mission',
+        type: 'number',
+        requis: true
+      }
+    ]
   },
+
+  // FAMILLE
   {
     id: 'famille',
     label: 'Famille',
     champs: [
       { cle: 'codeFamille', label: 'Code', requis: true },
-      { cle: 'libelleFamille', label: 'Libellé', requis: true },
-      { cle: 'typeFamille', label: 'Type', requis: true },
-      { cle: 'natureFamille', label: 'Nature', requis: true },
-    ],
+      { cle: 'libelle', label: 'Libellé', requis: true },
+      { cle: 'type', label: 'Type' },
+      { cle: 'nature', label: 'Nature' },
+      {
+        cle: 'idSousFamille',
+        label: 'Sous-famille',
+        type: 'number',
+        requis: true
+      }
+    ]
   },
+
+  // SOUS-FAMILLE
   {
-    // entité sous famille : Cod_sf, Lib_sf, Typ_sf + lien vers famille (1,1)
     id: 'sousfamille',
     label: 'Sous-famille',
     champs: [
-      { cle: 'Cod_sf', label: 'Code', requis: true },
-      { cle: 'Lib_sf', label: 'Libellé', requis: true },
-      { cle: 'Typ_sf', label: 'Type', type: 'select', source: 'typeElement', requis: true },
-
-    ],
+      { cle: 'codeSousFamille', label: 'Code', requis: true },
+      { cle: 'libelleSousFamille', label: 'Libellé', requis: true },
+      {
+        cle: 'typeSousFamille',
+        label: 'Type',
+        type: 'select',
+        source: 'typeElement'
+      }
+    ]
   },
+
+  // TYPE DE POSTE
   {
-    // ATTENTION : noms de champs supposés, à vérifier dans Swagger (POST /api/type-postes)
     id: 'typeposte',
     label: 'Type de poste',
     champs: [
-      { cle: 'codeTypePoste', label: 'Code', requis: true },
-      { cle: 'libelleTypePoste', label: 'Libellé', requis: true },
-    ],
-  },
+      { cle: 'codeType', label: 'Code', requis: true },
+      { cle: 'libelleCourtType', label: 'Libellé court', requis: true },
+      {
+        cle: 'libelleLongType',
+        label: 'Libellé long',
+        type: 'textarea',
+        pleine: true
+      }
+    ]
+  }
+
 ];
 
 @Component({
   selector: 'app-parametre',
   imports: [ReactiveFormsModule],
   templateUrl: './parametre.html',
-  styleUrl: './parametre.css',
+  styleUrl: './parametre.css'
 })
+
 export class Parametre implements OnInit {
+
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
+
+  // SERVICES
   private anneeService = inject(AnneeExerciceService);
+  private agentService = inject(AgentService);
+  private categorieService = inject(CategorieService);
   private familleService = inject(FamilleService);
   private posteService = inject(PosteService);
   private processusService = inject(ProcessusService);
   private recommandationService = inject(RecomandationService);
+  private sousFamilleService = inject(SousFamilleService);
   private typeMissionService = inject(TypeMissionService);
   private typePosteService = inject(TypePosteService);
 
-  // Associe chaque onglet à ses appels API (les onglets absents restent en local)
-  private api: Record<
-    string,
-    {
-      getAll: () => any;
-      create: (d: any) => any;
-      update: (id: any, d: any) => any;
-      delete: (id: any) => any;
-    }
-  > = {
+  // CONFIGURATION DES API
+  private api: Record<string, any> = {
+
     annee: {
       getAll: () => this.anneeService.getAllAnnees(),
-      create: (d) => this.anneeService.createAnnee(d),
-      update: (id, d) => this.anneeService.updateAnnee(id, d),
-      delete: (id) => this.anneeService.deleteAnnee(id),
+      create: (d: any) => this.anneeService.createAnnee(d),
+      update: (id: any, d: any) => this.anneeService.updateAnnee(id, d),
+      delete: (id: any) => this.anneeService.deleteAnnee(id)
     },
+
+    categorie: {
+      getAll: () => this.categorieService.getAll(),
+      create: (d: any) => this.categorieService.create(d),
+      update: (id: any, d: any) => this.categorieService.update(id, d),
+      delete: (id: any) => this.categorieService.delete(id)
+    },
+
     type: {
       getAll: () => this.typeMissionService.getAllTypeMissions(),
-      create: (d) => this.typeMissionService.createTypeMission(d),
-      update: (id, d) => this.typeMissionService.updateTypeMission(id, d),
-      delete: (id) => this.typeMissionService.deleteTypeMission(id),
+      create: (d: any) => this.typeMissionService.createTypeMission(d),
+      update: (id: any, d: any) => this.typeMissionService.updateTypeMission(id, d),
+      delete: (id: any) => this.typeMissionService.deleteTypeMission(id)
     },
+
+    agent: {
+      getAll: () => this.agentService.getAll(),
+      create: (d: any) => this.agentService.create(d),
+      update: (id: any, d: any) => this.agentService.update(id, d),
+      delete: (id: any) => this.agentService.delete(id)
+    },
+
     typeposte: {
-      getAll: () => this.typePosteService.getAllTypePostes(),
-      create: (d) => this.typePosteService.createTypePoste(d),
-      update: (id, d) => this.typePosteService.updateTypePoste(id, d),
-      delete: (id) => this.typePosteService.deleteTypePoste(id),
+      getAll: () => this.typePosteService.getAll(),
+      create: (d: any) => this.typePosteService.create(d),
+      update: (id: any, d: any) => this.typePosteService.update(id, d),
+      delete: (id: any) => this.typePosteService.delete(id)
     },
+
     poste: {
       getAll: () => this.posteService.getAll(),
-      create: (d) => this.posteService.create(d),
-      update: (id, d) => this.posteService.update(id, d),
-      delete: (id) => this.posteService.delete(id),
+      create: (d: any) => this.posteService.create(d),
+      update: (id: any, d: any) => this.posteService.update(id, d),
+      delete: (id: any) => this.posteService.delete(id)
     },
+
     processus: {
       getAll: () => this.processusService.getAll(),
-      create: (d) => this.processusService.create(d),
-      update: (id, d) => this.processusService.update(id, d),
-      delete: (id) => this.processusService.delete(id),
+      create: (d: any) => this.processusService.create(d),
+      update: (id: any, d: any) => this.processusService.update(id, d),
+      delete: (id: any) => this.processusService.delete(id)
     },
+
     famille: {
       getAll: () => this.familleService.getAll(),
-      create: (d) => this.familleService.create(d),
-      update: (id, d) => this.familleService.update(id, d),
-      delete: (id) => this.familleService.delete(id),
+      create: (d: any) => this.familleService.create(d),
+      update: (id: any, d: any) => this.familleService.update(id, d),
+      delete: (id: any) => this.familleService.delete(id)
     },
+
+    sousfamille: {
+      getAll: () => this.sousFamilleService.getAll(),
+      create: (d: any) => this.sousFamilleService.create(d),
+      update: (id: any, d: any) => this.sousFamilleService.update(id, d),
+      delete: (id: any) => this.sousFamilleService.delete(id)
+    },
+
     recommandation: {
       getAll: () => this.recommandationService.getAll(),
-      create: (d) => this.recommandationService.create(d),
-      update: (id, d) => this.recommandationService.update(id, d),
-      delete: (id) => this.recommandationService.delete(id),
-    },
+      create: (d: any) => this.recommandationService.create(d),
+      update: (id: any, d: any) => this.recommandationService.update(id, d),
+      delete: (id: any) => this.recommandationService.delete(id)
+    }
+
   };
 
   params = PARAMS;
+
   modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
-  confirmationModal = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
+
+  confirmationModal =
+    viewChild.required<ElementRef<HTMLDialogElement>>('confirmationModal');
+
   modalOuvert = signal(false);
   confirmationOuverte = signal(false);
 
-  // id de la ligne en cours de modification (null = mode ajout)
   editId = signal<number | null>(null);
+
   modeEdition = computed(() => this.editId() !== null);
 
   actifId = signal('annee');
-  actif = computed(() => this.params.find((p) => p.id === this.actifId())!);
+
+  actif = computed(
+    () => this.params.find((p) => p.id === this.actifId())!
+  );
 
   donnees = signal<Record<string, Ligne[]>>({
-    annee: [], // rempli par l'API
+
+    annee: [],
     categorie: [],
-    type: [], // rempli par l'API
+    type: [],
     agent: [],
     poste: [],
     processus: [],
@@ -241,214 +403,405 @@ export class Parametre implements OnInit {
     famille: [],
     sousfamille: [],
     typeposte: [],
+
     typeElement: [
       { id: 'FAMILLE_RISQUE', libelle: 'Famille risque' },
       { id: 'SOUS_FAMILLE_RISQUE', libelle: 'Sous-famille risque' },
       { id: 'FAMILLE_CONSTAT', libelle: 'Famille constat' },
-      { id: 'SOUS_FAMILLE_CONSTAT', libelle: 'Sous-famille constat' },
-    ],
+      { id: 'SOUS_FAMILLE_CONSTAT', libelle: 'Sous-famille constat' }
+    ]
+
   });
 
-  lignes = computed(() => this.donnees()[this.actifId()] ?? []);
-  anneeEnCours = computed(() => this.donnees()['annee'].find((l) => l['enCours']));
+  lignes = computed(
+    () => this.donnees()[this.actifId()] ?? []
+  );
+
+  anneeEnCours = computed(
+    () => this.donnees()['annee'].find((l) => l['enCours'])
+  );
 
   form: FormGroup = this.fb.group({});
 
-  // Colonne affichée pour chaque liste déroulante liée
-  libelleCle: Record<string, string> = { famille: 'libelleFamille', typeElement: 'libelle' };
+  // LIBELLÉS DES LISTES DÉROULANTES
+  libelleCle: Record<string, string> = {
+    famille: 'libelle',
+    typeElement: 'libelle',
+    typeposte: 'libelleCourtType',
+    processus: 'libelle'
+  };
 
+  // INITIALISATION
   ngOnInit() {
+
     this.route.queryParamMap.subscribe((queryParams) => {
+
       const module = queryParams.get('module');
+
       if (module && this.params.some((param) => param.id === module)) {
         this.actifId.set(module);
-        this.charger(module);
       }
+
     });
+
     this.charger('annee');
+    this.charger('categorie');
     this.charger('type');
+    this.charger('agent');
     this.charger('typeposte');
     this.charger('poste');
     this.charger('processus');
     this.charger('famille');
+    this.charger('sousfamille');
     this.charger('recommandation');
+
   }
 
-  // ---------- API : chargement d'un onglet ----------
-
+  // CHARGEMENT API
   charger(id: string) {
+
     const a = this.api[id];
+
     if (!a) return;
+
     a.getAll().subscribe({
+
       next: (data: any) => {
-        console.log(`Réponse API ${id} :`, data); // pour vérifier la forme
-        const liste = Array.isArray(data) ? data : (data?.content ?? data?.data ?? []);
-        this.donnees.update((d) => ({ ...d, [id]: liste }));
+
+        console.log(`Réponse API ${id} :`, data);
+
+        const liste = Array.isArray(data)
+          ? data
+          : (data?.content ?? data?.data ?? []);
+
+        this.donnees.update((d) => ({
+          ...d,
+          [id]: liste
+        }));
+
       },
-      error: (err: any) => console.error(`Erreur chargement ${id}`, err),
+
+      error: (err: any) => {
+        console.error(`Erreur chargement ${id}`, err);
+      }
+
     });
+
   }
 
-  // ---------- Utilitaires ----------
-
-  typeDe(c: Champ): string {
-    return c.type ?? 'text';
-  }
-
+  // OPTIONS DES LISTES DÉROULANTES
   options(source: string) {
     return this.donnees()[source] ?? [];
   }
 
   libelle(source: string, id: any) {
-    const l = this.options(source).find((x) => x['id'] == id);
-    return l ? l[this.libelleCle[source]] : '-';
+
+    const l = this.options(source).find(
+      (x) => x['id'] == id
+    );
+
+    if (!l) return '-';
+
+    return (
+      l[this.libelleCle[source]] ??
+      l['libelle'] ??
+      l['libelleLong'] ??
+      l['libelleCourt'] ??
+      '-'
+    );
+
   }
 
+  // CONFIRMATION
   valeurConfirmation(champ: Champ): string {
+
     const valeur = this.form.get(champ.cle)?.value;
+
     if (champ.type === 'password') return valeur ? '••••••' : '-';
-    if (champ.type === 'select') return this.libelle(champ.source!, valeur);
-    return valeur === null || valeur === undefined || valeur === '' ? '-' : String(valeur);
+
+    if (champ.type === 'select') {
+      return this.libelle(champ.source!, valeur);
+    }
+
+    return valeur === null || valeur === undefined || valeur === ''
+      ? '-'
+      : String(valeur);
+
   }
 
   libelleConfirmation(): string {
-    const champLibelle = this.actif().champs.find((champ) =>
-      champ.cle.toLowerCase().includes('libelle'),
+
+    const champLibelle = this.actif().champs.find(
+      (champ) => champ.cle.toLowerCase().includes('libelle')
     );
-    const champAffiche = champLibelle ?? this.actif().champs[0];
-    return champAffiche ? this.valeurConfirmation(champAffiche) : '-';
+
+    const champAffiche =
+      champLibelle ?? this.actif().champs[0];
+
+    return champAffiche
+      ? this.valeurConfirmation(champAffiche)
+      : '-';
+
   }
 
+  nomElementConfirmation(): string {
+
+    const noms: Record<string, string> = {
+
+      annee: "l’année",
+      categorie: 'la catégorie',
+      type: 'le type de mission',
+      agent: "l’agent",
+      poste: 'le poste',
+      processus: 'le processus',
+      recommandation: 'la recommandation',
+      famille: 'la famille',
+      sousfamille: 'la sous-famille',
+      typeposte: 'le type de poste'
+
+    };
+
+    return noms[this.actifId()] ??
+      this.actif().label.toLowerCase();
+
+  }
+
+  // CHANGEMENT D'ONGLET
   choisir(id: string) {
+
     this.actifId.set(id);
     this.charger(id);
+
   }
 
-  // ---------- Modale ----------
-
-  // ligne absente = ajout ; ligne fournie = modification
+  // OUVERTURE DU FORMULAIRE
   ouvrir(ligne?: Ligne) {
+
     const p = this.actif();
+
     const controles: Record<string, any> = {};
+
     for (const c of p.champs) {
-      controles[c.cle] = [ligne?.[c.cle] ?? '', c.requis ? Validators.required : []];
+
+      controles[c.cle] = [
+        ligne?.[c.cle] ?? '',
+        c.requis ? Validators.required : []
+      ];
+
     }
-    if (p.statut) controles['enCours'] = [ligne?.['enCours'] ?? false];
+
+    if (p.statut) {
+      controles['enCours'] = [
+        ligne?.['enCours'] ?? false
+      ];
+    }
+
     this.form = this.fb.group(controles);
-    this.editId.set(ligne ? Number(ligne['id']) : null);
+
+    this.editId.set(
+      ligne ? Number(ligne['id']) : null
+    );
+
     this.confirmationOuverte.set(false);
     this.modalOuvert.set(true);
+
     this.modal().nativeElement.showModal();
+
   }
 
   fermer() {
+
     this.modal().nativeElement.close();
+
     this.modalOuvert.set(false);
     this.confirmationOuverte.set(false);
+
     this.editId.set(null);
+
   }
 
   clicFond(e: MouseEvent) {
-    if (e.target === this.modal().nativeElement) this.fermer();
+
+    if (e.target === this.modal().nativeElement) {
+      this.fermer();
+    }
+
   }
 
   clicFondConfirmation(e: MouseEvent) {
-    if (e.target === this.confirmationModal().nativeElement) this.annulerConfirmation();
+
+    if (e.target === this.confirmationModal().nativeElement) {
+      this.annulerConfirmation();
+    }
+
   }
 
+  // DEMANDER CONFIRMATION
   demanderConfirmation() {
+
     if (this.form.invalid) {
+
       this.form.markAllAsTouched();
       return;
+
     }
+
     this.confirmationOuverte.set(true);
+
     this.confirmationModal().nativeElement.showModal();
+
   }
 
   annulerConfirmation() {
+
     this.confirmationModal().nativeElement.close();
+
     this.confirmationOuverte.set(false);
+
   }
 
-  // ---------- Enregistrer (ajout ou modification) ----------
-
+  // ENREGISTREMENT
   enregistrer() {
+
     if (this.form.invalid) {
+
       this.form.markAllAsTouched();
       return;
+
     }
+
     if (this.editId() === null) {
+
       this.demanderConfirmation();
       return;
+
     }
+
     this.enregistrerDefinitivement();
+
   }
 
   confirmerEnregistrement() {
+
     this.annulerConfirmation();
+
     this.enregistrerDefinitivement();
+
   }
 
   private enregistrerDefinitivement() {
+
     const id = this.actifId();
-    const valeurs = { ...this.form.getRawValue() };
+
+    const valeurs = {
+      ...this.form.getRawValue()
+    };
+
+    // CONVERSION DES IDENTIFIANTS EN NOMBRES
     for (const champ of this.actif().champs) {
-      if (champ.type === 'number' && valeurs[champ.cle] !== '') {
-        valeurs[champ.cle] = Number(valeurs[champ.cle]);
+
+      if (
+        (champ.type === 'number' || champ.type === 'select') &&
+        valeurs[champ.cle] !== '' &&
+        valeurs[champ.cle] !== null
+      ) {
+
+        const valeur = Number(valeurs[champ.cle]);
+
+        if (!Number.isNaN(valeur)) {
+          valeurs[champ.cle] = valeur;
+        }
+
       }
+
     }
+
+    // NE PAS ENVOYER LE STATUT LOCAL À L'API
+    delete valeurs['enCours'];
+
     const editId = this.editId();
 
-    // Onglet branché sur l'API
     const a = this.api[id];
+
     if (a) {
-      const requete = editId !== null ? a.update(editId, valeurs) : a.create(valeurs);
+
+      console.log('Données envoyées à l’API :', valeurs);
+
+      const requete = editId !== null
+        ? a.update(editId, valeurs)
+        : a.create(valeurs);
+
       requete.subscribe({
-        next: () => {
+
+        next: (response: any) => {
+
+          console.log('Enregistrement réussi :', response);
+
           this.charger(id);
           this.fermer();
+
         },
-        error: (err: any) => console.error(`Erreur enregistrement ${id}`, err),
+
+        error: (err: any) => {
+
+          console.error(`Erreur enregistrement ${id}`, err);
+          console.error('Détail du serveur :', err.error);
+
+        }
+
       });
+
+      return;
+
+    }
+
+  }
+
+  // DÉFINIR ANNÉE EN COURS
+  definirEnCours(ligneId: number) {
+
+    this.donnees.update((d) => ({
+
+      ...d,
+
+      annee: d['annee'].map((l) => ({
+        ...l,
+        enCours: l['id'] === ligneId
+      }))
+
+    }));
+
+  }
+
+  // SUPPRESSION
+  supprimer(ligneId: number) {
+
+    if (!confirm('Voulez-vous vraiment supprimer cet élément ?')) {
       return;
     }
 
-    // Onglets pas encore branchés : en local
-    this.donnees.update((d) => {
-      const liste = d[id];
-      if (editId !== null) {
-        return { ...d, [id]: liste.map((l) => (l['id'] === editId ? { ...l, ...valeurs } : l)) };
-      }
-      const nouvelId = liste.length ? Math.max(...liste.map((l) => Number(l['id']))) + 1 : 1;
-      return { ...d, [id]: [...liste, { id: nouvelId, ...valeurs }] };
-    });
-    this.fermer();
-  }
-
-  // Pour l'instant uniquement à l'écran (pas encore enregistré en base)
-  definirEnCours(ligneId: number) {
-    this.donnees.update((d) => ({
-      ...d,
-      annee: d['annee'].map((l) => ({ ...l, enCours: l['id'] === ligneId })),
-    }));
-  }
-
-  // ---------- Suppression ----------
-
-  supprimer(ligneId: number) {
-    if (!confirm('Voulez-vous vraiment supprimer cet élément ?')) return;
-
     const id = this.actifId();
+
     const a = this.api[id];
 
     if (a) {
+
       a.delete(ligneId).subscribe({
-        next: () => this.charger(id),
-        error: (err: any) => console.error(`Erreur suppression ${id}`, err),
+
+        next: () => {
+          this.charger(id);
+        },
+
+        error: (err: any) => {
+          console.error(`Erreur suppression ${id}`, err);
+        }
+
       });
+
       return;
+
     }
 
-    this.donnees.update((d) => ({ ...d, [id]: d[id].filter((l) => l['id'] !== ligneId) }));
   }
+
 }

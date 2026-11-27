@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { ApiService } from '../../httpRequetteServices/api.service (1)';
 import { Observable } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 export interface Poste {
   id?: number;
@@ -14,35 +15,66 @@ export interface Poste {
   processusLibelle?: string;
 }
 
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class PosteService {
-  private http = inject(HttpClient);
-  private readonly url =  'api/postes';// à adapter
+  private apiService = inject(ApiService);
 
-  getAll(): Observable<Poste[]> {
-    return this.http.get<Poste[]>(this.url);
+  private endpoint = 'api/postes';
+
+  // Récupérer tous les postes
+  getAll(): Observable<any> {
+    return this.apiService._get(this.endpoint).pipe(
+      map((res: any) => res),
+      catchError((error: any) => {
+        console.error('Erreur lors du chargement des postes :', error);
+        throw error;
+      }),
+    );
   }
 
-  getBySousFamille(sousFamilleId: number): Observable<Poste[]> {
-    const params = new HttpParams().set('sousFamilleId', sousFamilleId);
-    return this.http.get<Poste[]>(this.url, { params });
+  // Récupérer un poste par son ID
+  getById(id: number): Observable<any> {
+    return this.apiService._get(`${this.endpoint}/${id}`).pipe(
+      map((res: any) => res),
+      catchError((error: any) => {
+        console.error('Erreur lors de la récupération du poste :', error);
+        throw error;
+      }),
+    );
   }
 
-  getById(id: number): Observable<Poste> {
-    return this.http.get<Poste>(`${this.url}/${id}`);
+  // Ajouter un poste
+  create(poste: Poste): Observable<any> {
+    return this.apiService._post(this.endpoint, poste).pipe(
+      map((res: any) => res),
+      catchError((error: any) => {
+        console.error('Erreur lors de la création du poste :', error);
+        throw error;
+      }),
+    );
   }
 
-  create(poste: Poste): Observable<Poste> {
-    return this.http.post<Poste>(this.url, poste);
+  // Modifier un poste
+  update(id: number, poste: Poste): Observable<any> {
+    return this.apiService._put(`${this.endpoint}/${id}`, poste).pipe(
+      map((res: any) => res),
+      catchError((error: any) => {
+        console.error('Erreur lors de la modification du poste :', error);
+        throw error;
+      }),
+    );
   }
 
-  update(id: number, poste: Poste): Observable<Poste> {
-    return this.http.put<Poste>(`${this.url}/${id}`, poste);
-  }
-
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.url}/${id}`);
+  // Supprimer un poste
+  delete(id: number): Observable<any> {
+    return this.apiService._delete(`${this.endpoint}/${id}`).pipe(
+      map((res: any) => res),
+      catchError((error: any) => {
+        console.error('Erreur lors de la suppression du poste :', error);
+        throw error;
+      }),
+    );
   }
 }
-

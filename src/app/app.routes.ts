@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from '../auth/login/login.component';
+import { authGuard } from '../auth/demo-auth';
 import { Accueil } from './accueil/accueil';
 import { Parametre } from './parametre/parametre';
 import { AuthLayouts } from './front-end/layouts/auth-layouts/auth-layouts';
@@ -8,6 +9,7 @@ import { Missions } from './front-end/pages/missions/missions';
 import { Inspection } from './front-end/pages/inspection/inspection.component';
 import { Rapport } from './front-end/pages/rapports/rapports.component';
 import { AuditComponent } from '../audit/audit.component';
+
 export const routes: Routes = [
   {
     path: '',
@@ -20,6 +22,7 @@ export const routes: Routes = [
   {
     path: 'home',
     component: MainLayouts,
+    canActivate: [authGuard],
     children: [
       { path: '', component: Accueil },
       { path: 'accueil', component: Accueil },

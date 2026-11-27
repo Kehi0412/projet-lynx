@@ -1,121 +1,165 @@
-<div class="missions-page">
-  <div class="tabs">
-    <button
-      type="button"
-      [class.active]="activeTab() === 'INSPECTION'"
-      (click)="selectTab('INSPECTION')"
-    >
-      Mission d'inspection
-    </button>
-    <button
-      type="button"
-      [class.active]="activeTab() === 'AUDIT'"
-      (click)="selectTab('AUDIT')"
-    >
-      Mission d'audit
-    </button>
+<header class="page-heading">
+  <div>
+    <h1>Missions</h1>
+    <p>Enregistrement et suivi des missions du Trésor public.</p>
   </div>
+  <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
+</header>
 
-  <div class="header">
-    <h2>Missions</h2>
-    <button type="button" class="btn-add" (click)="openAddModal()">
-      Ajouter
-    </button>
-  </div>
+<nav class="onglets">
+  <button type="button" class="onglet" [class.actif]="activeTab() === 'INSPECTION'" (click)="selectTab('INSPECTION')">
+    Mission d'inspection ({{ nbInspections() }})
+  </button>
+  <button type="button" class="onglet" [class.actif]="activeTab() === 'AUDIT'" (click)="selectTab('AUDIT')">
+    Mission d'audit ({{ nbAudits() }})
+  </button>
+</nav>
 
+<div class="table-wrap">
   <table>
     <thead>
     <tr>
       <th>Code mission</th>
-      <th>Date début</th>
-      <th>Date fin</th>
-      <th>Localisation</th>
-      <th>Structure contrôlée</th>
+      <th>Date de début</th>
+      <th>Date de fin</th>
+      <th>Année</th>
+      <th>Type</th>
+      <th>Poste / localisation</th>
       <th>Chef de poste</th>
-      <th>Objet</th>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    @for (mission of filteredMissions(); track mission.id_miss) {
-    <tr>
-      <td>{{ mission.Cod_miss }}</td>
-      <td>{{ mission.D_db_miss }}</td>
-      <td>{{ mission.D_fin_miss }}</td>
-      <td>{{ mission.Loc_miss }}</td>
-      <td>{{ mission.Stru_contr_miss }}</td>
-      <td>{{ mission.Chf_pste_miss }}</td>
-      <td>{{ mission.Obj_miss }}</td>
-    </tr>
-    } @empty {
-    <tr>
-      <td colspan="7">
-        Aucune mission. Cliquez sur « Ajouter ».
-      </td>
-    </tr>
-    }
+      @for (m of filteredMissions(); track m.id) {
+        <tr>
+          <td>{{ m.code }}</td>
+          <td>{{ m.dateDebut }}</td>
+          <td>{{ m.dateFin }}</td>
+          <td>{{ m.libelleAnnee }}</td>
+          <td>{{ m.codeTypeMission }}</td>
+          <td>{{ m.codePoste }} — {{ m.localisation }}</td>
+          <td>{{ m.chefPoste }}</td>
+          <td class="actions">
+            <button type="button" class="icone" (click)="ouvrir(m)" title="Modifier" aria-label="Modifier">✏️</button>
+            <button type="button" class="icone" (click)="supprimer(m.id)" title="Supprimer" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="8" class="vide">Aucune mission dans cet onglet. Cliquez sur « Ajouter ».</td></tr>
+      }
     </tbody>
   </table>
-
-  @if (isAddModalOpen()) {
-  <div class="modal-backdrop">
-    <div class="modal">
-      <h3>Ajouter une mission</h3>
-
-      <form [formGroup]="missionForm" (ngSubmit)="submitMission()">
-        <label>
-          Type de mission
-          <select formControlName="typeMission">
-            <option value="INSPECTION">Mission d'inspection</option>
-            <option value="AUDIT">Mission d'audit</option>
-          </select>
-        </label>
-
-        <label>
-          Code mission
-          <input type="text" formControlName="Cod_miss" />
-        </label>
-
-        <label>
-          Date de début
-          <input type="date" formControlName="D_db_miss" />
-        </label>
-
-        <label>
-          Date de fin
-          <input type="date" formControlName="D_fin_miss" />
-        </label>
-
-        <label>
-          Localisation
-          <input type="text" formControlName="Loc_miss" />
-        </label>
-
-        <label>
-          Structure contrôlée
-          <input type="text" formControlName="Stru_contr_miss" />
-        </label>
-
-        <label>
-          Matricule chef de poste
-          <input type="text" formControlName="Ma_chf_pste_miss" />
-        </label>
-
-        <label>
-          Chef de poste
-          <input type="text" formControlName="Chf_pste_miss" />
-        </label>
-
-        <label>
-          Objet de la mission
-          <textarea rows="3" formControlName="Obj_miss"></textarea>
-        </label>
-
-        <div class="modal-actions">
-          <button type="button" (click)="closeAddModal()">Annuler</button>
-          <button type="submit">Enregistrer</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  }
 </div>
+
+<dialog #modal (click)="clicFond($event)">
+  <div class="m-head">
+    <h2>{{ editId() !== null ? 'Modifier la mission' : 'Ajouter une mission' }}</h2>
+    <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="enregistrer()">
+    <div class="grid">
+      <div>
+        <label for="codeMission">Code mission</label>
+        <input id="codeMission" formControlName="codeMission">
+        @if (form.controls.codeMission.touched && form.controls.codeMission.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="localisation">Localisation</label>
+        <input id="localisation" formControlName="localisation">
+        @if (form.controls.localisation.touched && form.controls.localisation.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="dateDebut">Date de début</label>
+        <input id="dateDebut" type="date" formControlName="dateDebut">
+        @if (form.controls.dateDebut.touched && form.controls.dateDebut.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="dateFin">Date de fin</label>
+        <input id="dateFin" type="date" formControlName="dateFin">
+        @if (form.controls.dateFin.touched && form.controls.dateFin.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+        @if (form.hasError('datesInvalides')) {
+          <div class="err">La date de fin doit suivre la date de début.</div>
+        }
+      </div>
+
+      <div>
+        <label for="idAnnee">Année d'exercice</label>
+        <select id="idAnnee" formControlName="idAnnee">
+          <option [ngValue]="0" disabled>Choisir…</option>
+          @for (a of annees(); track a['id']) {
+            <option [ngValue]="a['id']">{{ etiquette(a, 'libelleAnnee') }}</option>
+          }
+        </select>
+        @if (form.controls.idAnnee.touched && form.controls.idAnnee.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="idTypeMission">Type de mission</label>
+        <select id="idTypeMission" formControlName="idTypeMission">
+          <option [ngValue]="0" disabled>Choisir…</option>
+          @for (t of typesMission(); track t['id']) {
+            <option [ngValue]="t['id']">{{ etiquette(t, 'categorieMission', 'codeTypeMission') }}</option>
+          }
+        </select>
+        @if (form.controls.idTypeMission.touched && form.controls.idTypeMission.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div class="full">
+        <label for="idPoste">Poste / service</label>
+        <select id="idPoste" formControlName="idPoste">
+          <option [ngValue]="0" disabled>Choisir…</option>
+          @for (p of postes(); track p['id']) {
+            <option [ngValue]="p['id']">{{ etiquette(p, 'libellePoste', 'nomPoste', 'codePoste') }}</option>
+          }
+        </select>
+        @if (form.controls.idPoste.touched && form.controls.idPoste.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="chefPoste">Chef de poste</label>
+        <input id="chefPoste" formControlName="chefPoste">
+        @if (form.controls.chefPoste.touched && form.controls.chefPoste.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+
+      <div>
+        <label for="matriculeChefPoste">Matricule du chef de poste</label>
+        <input id="matriculeChefPoste" formControlName="matriculeChefPoste">
+      </div>
+
+      <div class="full">
+        <label for="objet">Objet de la mission</label>
+        <textarea id="objet" formControlName="objet"></textarea>
+        @if (form.controls.objet.touched && form.controls.objet.invalid) {
+          <div class="err">Ce champ est obligatoire.</div>
+        }
+      </div>
+    </div>
+
+    <div class="m-foot">
+      <button class="btn" type="button" (click)="fermer()">Annuler</button>
+      <button class="btn primary" type="submit">
+        {{ editId() !== null ? 'Mettre à jour' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
+</dialog>

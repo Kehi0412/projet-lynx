@@ -1,36 +1,43 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { ApiService } from '../../httpRequetteServices/api.service (1)';
+import { Observable, catchError, throwError } from 'rxjs';
 
 export interface SousFamille {
-  id: 0;
-  codeSousFamille: 'string';
-  libelleSousFamille: 'string';
-  typeSousFamille: 'string';
+  id?: number;
+  codeSousFamille: string;
+  libelleSousFamille: string;
+  typeSousFamille?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class SousFamilleService {
-  private http = inject(HttpClient);
-  private readonly url = 'api/sous-familles';
+  private apiService = inject(ApiService);
+  private endpoint = 'api/sous-familles';
 
   getAll(): Observable<SousFamille[]> {
-    return this.http.get<SousFamille[]>(this.url);
+    return this.apiService._get(this.endpoint).pipe(catchError(this.handleError));
   }
 
   getById(id: number): Observable<SousFamille> {
-    return this.http.get<SousFamille>(`${this.url}/${id}`);
+    return this.apiService._get(`${this.endpoint}/${id}`).pipe(catchError(this.handleError));
   }
 
-  create(sousFamille: SousFamille): Observable<SousFamille> {
-    return this.http.post<SousFamille>(this.url, sousFamille);
+  create(data: SousFamille): Observable<any> {
+    return this.apiService._post(this.endpoint, data).pipe(catchError(this.handleError));
   }
 
-  update(id: number, sousFamille: SousFamille): Observable<SousFamille> {
-    return this.http.put<SousFamille>(`${this.url}/${id}`, sousFamille);
+  update(id: number, data: SousFamille): Observable<any> {
+    return this.apiService._put(`${this.endpoint}/${id}`, data).pipe(catchError(this.handleError));
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.url}/${id}`);
+  delete(id: number): Observable<any> {
+    return this.apiService._delete(`${this.endpoint}/${id}`).pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: any) {
+    const message =
+      error.error?.message || error.message || `${error.status} - ${error.statusText}`;
+
+    return throwError(() => new Error(message));
   }
 }
