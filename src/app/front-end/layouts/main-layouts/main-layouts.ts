@@ -16,7 +16,7 @@ import { PARAMS } from '../../../parametre/parametre';
 })
 export class MainLayouts implements OnDestroy {
   readonly profil = 'ADMINISTRATEUR';
-  readonly poste = 'Direction des Systemes Informatiques et Numer...'; // garde ta ligne d'origine complète
+  readonly poste: string = "Direction du Systeme D'information Numerique";
   readonly parametres = PARAMS;
   readonly parametresOuverts = signal(false);
   readonly moduleActif = signal('annee');

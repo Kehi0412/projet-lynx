@@ -1,28 +1,70 @@
 <div class="login-card">
+  <svg class="wave wave-top" viewBox="0 0 320 130" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,0 H320 C220,8 110,45 0,130 Z" fill="#f57c00"/>
+    <path d="M0,100 C90,45 190,12 285,0 H305 C205,18 100,58 0,128 Z" fill="#fff" opacity=".95"/>
+  </svg>
+  <svg class="wave wave-bottom" viewBox="0 0 320 130" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M320,130 H0 C100,122 210,85 320,0 Z" fill="#159447"/>
+    <path d="M320,40 C240,90 140,118 40,130 H0 C110,115 220,78 320,16 Z" fill="#f57c00"/>
+    <path d="M320,22 C235,78 135,110 30,130 H60 C160,112 250,72 320,4 Z" fill="#fff"/>
+  </svg>
+
   <div class="login-header">
-    <h2>BIENVENUE A LINX!</h2>
-    <p>Connectez-vous pour y acceder.</p>
+    <div class="logo-wrap">
+      <img src="img_1.png" alt="Trésor" />
+    </div>
+    <span class="brand-sep"></span>
+    <div class="brand-text">
+      <h2>LINX</h2>
+      <p>GESTION DES MISSIONS</p>
+    </div>
   </div>
-  <div class="logo-wrap">
-    <img src="img_1.png" alt="Trésor" />
-  </div>
+
+  <p class="intro">
+    Accédez à votre espace de gestion des missions d'inspection et d'audit.
+  </p>
 
   <form [formGroup]="loginForm" (ngSubmit)="connexion()">
     <label>Matricule</label>
-    <input type="text" formControlName="matricule" placeholder="Entrez votre matricule" />
+    <div class="field">
+      <svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="#1b6b3a">
+        <circle cx="12" cy="7" r="4.5"/>
+        <path d="M3 21c0-4.5 4-7.5 9-7.5s9 3 9 7.5z"/>
+      </svg>
+      <input type="text" formControlName="matricule" placeholder="Entrez votre matricule" />
+    </div>
 
     <label>Mot de passe</label>
-    <div class="pwd-group">
-      <input [type]="afficherMdp ? 'text' : 'password'" formControlName="motDePasse"
+    <div class="field pwd-group">
+      <input [type]="afficherMdp ? 'text' : 'password'"
+             formControlName="motDePasse"
              placeholder="Entrez votre mot de passe" />
-      <button type="button" class="eye" (click)="afficherMdp = !afficherMdp">👁</button>
+      <button type="button" class="eye" (click)="afficherMdp = !afficherMdp">
+        {{ afficherMdp ? 'Masquer' : 'Afficher' }}
+      </button>
     </div>
+
 
     <label class="remember">
       <input type="checkbox" formControlName="remember" /> Se souvenir de moi
     </label>
-    <button type="submit" class="btn-connexion" [disabled]="isLoading">
+
+    <div *ngIf="erreur()" class="alert alert-error" role="alert">
+      <span class="alert-icon">✖</span>
+      <span>{{ erreur() }}</span>
+    </div>
+
+    <div *ngIf="succes()" class="alert alert-success" role="status">
+      <span class="alert-icon">✔</span>
+      <span>Connexion réussie ! Redirection en cours...</span>
+    </div>
+
+    <button type="submit" class="btn-connexion"
+            [class.loading]="isLoading"
+            [disabled]="isLoading || succes()">
       {{ isLoading ? 'Connexion en cours...' : 'Connexion' }}
     </button>
   </form>
+
+  <div class="login-footer">LINX V2 • Accès réservé aux utilisateurs autorisés</div>
 </div>

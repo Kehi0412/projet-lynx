@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Login } from '../../app/back-end/services/login';
@@ -11,7 +12,7 @@ import { connexionDemo } from '../demo-auth';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgxSpinnerModule],
+  imports: [ReactiveFormsModule, NgxSpinnerModule, NgIf],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -28,6 +29,7 @@ export class LoginComponent {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    remember: new FormControl(false, { nonNullable: true }),
   });
 
   constructor(
@@ -55,7 +57,6 @@ export class LoginComponent {
     // ---------- MODE DÉMO : connexion locale, sans back-end ----------
     if (environment.modeDemo) {
       if (connexionDemo(formData.matricule, formData.motDePasse)) {
-        // faux profil, pour les pages qui lisent "userData"
         this.storage.setItem(
           'userData',
           JSON.stringify({
@@ -88,12 +89,24 @@ export class LoginComponent {
         this.storage.setItem('userData', JSON.stringify(res));
         this.erreur.set('');
         this.succes.set(true);
-        setTimeout(() => this.router.navigate(['/home/accueil']));
+
+        setTimeout(() => {
+          this.router.navigate(['/home/accueil']);
+        }, 1800);
       },
       error: (error: any) => {
         this.isLoading = false;
+        const msgBrut = typeof error === 'string' ? error : (error?.message ?? '');
+
+        if (error?.status === 401 || error?.status === 400 || msgBrut.includes('401')) {
+          this.afficherErreur('Matricule ou mot de passe incorrect.');
+          return;
+        }
+
         const errorMessage =
-          typeof error === 'string' ? error : error?.error?.message || 'Erreur lors de la connexion';
+          typeof error === 'string'
+            ? error
+            : error?.error?.message || 'Erreur lors de la connexion';
         this.afficherErreur(errorMessage);
       },
     });
