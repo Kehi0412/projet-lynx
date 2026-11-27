@@ -181,24 +181,6 @@
     </div>
 
 
-    <!-- MESSAGE D'ERREUR -->
-
-    @if (erreurFormulaire()) {
-
-      <div
-        class="message-erreur"
-        role="alert"
-        aria-live="assertive">
-
-        <span class="message-erreur-icon">!</span>
-
-        <span>{{ erreurFormulaire() }}</span>
-
-      </div>
-
-    }
-
-
     <form
       [formGroup]="form"
       (ngSubmit)="enregistrer()">
