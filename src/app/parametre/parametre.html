@@ -1,139 +1,395 @@
 <header class="entete">
+
   <h1>{{ actif().label }}</h1>
-  <button class="btn primary" type="button" (click)="ouvrir()">Ajouter</button>
+
+  <button class="btn primary" type="button" (click)="ouvrir()">
+    Ajouter
+  </button>
+
 </header>
 
 @if (actif().statut) {
+
   <p class="bandeau">
-    Année en cours : <strong>{{ anneeEnCours()?.['libelleAnnee'] ?? 'aucune' }}</strong>
+
+    Année en cours :
+
+    <strong>
+      {{ anneeEnCours()?.['libelleAnnee'] ?? 'aucune' }}
+    </strong>
+
   </p>
+
 }
 
 <div class="table-wrap">
+
   <table>
+
     <thead>
+
     <tr>
+
       <th>Id</th>
+
       @for (c of actif().champs; track c.cle) {
         <th>{{ c.label }}</th>
       }
+
       @if (actif().statut) {
         <th>Statut</th>
       }
 
       <th>Actions</th>
+
     </tr>
+
     </thead>
+
     <tbody>
+
       @for (l of lignes(); track l['id']) {
+
         <tr>
+
           <td>{{ l['id'] }}</td>
+
           @for (c of actif().champs; track c.cle) {
+
             <td>
+
               @if (c.type === 'select') {
+
                 {{ libelle(c.source!, l[c.cle]) }}
+
               } @else if (c.type === 'password') {
+
                 ••••••
+
               } @else {
+
                 {{ l[c.cle] || '-' }}
+
               }
+
             </td>
+
           }
+
           @if (actif().statut) {
+
             <td>
+
               @if (l['enCours']) {
+
                 <span class="badge">En cours</span>
+
               } @else {
-                <button type="button" class="lien" (click)="definirEnCours(l['id'])">Définir en cours</button>
+
+                <button
+                  type="button"
+                  class="lien"
+                  (click)="definirEnCours(l['id'])">
+
+                  Définir en cours
+
+                </button>
+
               }
+
             </td>
+
           }
-          <td>-</td><td>-</td><td>-</td><td>-</td>
+
           <td class="actions">
-            <button type="button" class="modif" (click)="ouvrir(l)"
-                    title="Modifier" aria-label="Modifier">✏️</button>
-            <button type="button" class="suppr" (click)="supprimer(l['id'])"
-                    [disabled]="l['enCours']"
-                    [attr.title]="l['enCours'] ? 'Impossible de supprimer l\'année en cours' : 'Supprimer'"
-                    aria-label="Supprimer">🗑</button>
+
+            <button
+              type="button"
+              class="modif"
+              (click)="ouvrir(l)"
+              title="Modifier">
+
+              ✏️
+
+            </button>
+
+            <button
+              type="button"
+              class="suppr"
+              (click)="supprimer(l['id'])"
+              [disabled]="l['enCours']"
+              title="Supprimer">
+
+              🗑
+
+            </button>
+
           </td>
+
         </tr>
+
       } @empty {
+
         <tr>
-          <td [attr.colspan]="actif().champs.length + 6 + (actif().statut ? 1 : 0)" class="vide">
-            Aucun élément dans « {{ actif().label }} ». Cliquez sur « Ajouter ».
+
+          <td
+            [attr.colspan]="actif().champs.length + 2 + (actif().statut ? 1 : 0)"
+            class="vide">
+
+            Aucun élément dans « {{ actif().label }} ».
+
+            Cliquez sur « Ajouter ».
+
           </td>
+
         </tr>
+
       }
+
     </tbody>
+
   </table>
+
 </div>
 
+
+<!-- MODALE AJOUT / MODIFICATION -->
+
 <dialog #modal (click)="clicFond($event)">
+
   @if (modalOuvert()) {
+
     <div class="m-head">
-      <h2>{{ modeEdition() ? 'Modifier' : 'Ajouter' }} : {{ actif().label }}</h2>
-      <button class="x" type="button" (click)="fermer()" aria-label="Fermer">&times;</button>
+
+      <h2>
+
+        {{ modeEdition() ? 'Modifier' : 'Ajouter' }} :
+
+        {{ actif().label }}
+
+      </h2>
+
+      <button
+        class="x"
+        type="button"
+        (click)="fermer()">
+
+        &times;
+
+      </button>
+
     </div>
-    <form [formGroup]="form" (ngSubmit)="enregistrer()">
+
+
+    <!-- MESSAGE D'ERREUR -->
+
+    @if (erreurFormulaire()) {
+
+      <div
+        class="message-erreur"
+        role="alert"
+        aria-live="assertive">
+
+        <span class="message-erreur-icon">!</span>
+
+        <span>{{ erreurFormulaire() }}</span>
+
+      </div>
+
+    }
+
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="enregistrer()">
+
       <div class="grid">
+
         @for (c of actif().champs; track c.cle) {
+
           <div [class.full]="c.pleine">
-            <label [for]="c.cle">{{ c.label }}</label>
+
+            <label [for]="c.cle">
+              {{ c.label }}
+            </label>
 
             @if (c.type === 'textarea') {
-              <textarea [id]="c.cle" [formControlName]="c.cle"></textarea>
+
+              <textarea
+                [id]="c.cle"
+                [formControlName]="c.cle">
+              </textarea>
+
             } @else if (c.type === 'select') {
-              <select [id]="c.cle" [formControlName]="c.cle">
-                <option value="" disabled>Choisir…</option>
+
+              <select
+                [id]="c.cle"
+                [formControlName]="c.cle">
+
+                <option value="" disabled>
+                  Choisir...
+                </option>
+
                 @for (o of options(c.source!); track o['id']) {
-                  <option [ngValue]="o['id']">{{ o[libelleCle[c.source!]] }}</option>
+
+                  <option [ngValue]="o['id']">
+
+                    {{ o[libelleCle[c.source!]] }}
+
+                  </option>
+
                 }
+
               </select>
+
               @if (options(c.source!).length === 0) {
-                <div class="err">Aucune famille. Ajoutez d'abord une famille.</div>
+
+                <div class="err">
+
+                  Aucune option disponible.
+
+                  Vérifiez les données de l'API.
+
+                </div>
+
               }
+
             } @else {
-              <input [id]="c.cle" [formControlName]="c.cle"
-                     [type]="c.type === 'date' ? 'date' : c.type === 'password' ? 'password' : c.type === 'number' ? 'number' : 'text'">
+
+              <input
+                [id]="c.cle"
+                [formControlName]="c.cle"
+                [type]="
+                  c.type === 'date' ? 'date' :
+                  c.type === 'password' ? 'password' :
+                  c.type === 'number' ? 'number' : 'text'
+                ">
+
             }
 
-            @if (form.get(c.cle)?.touched && form.get(c.cle)?.invalid) {
-              <div class="err">Ce champ est obligatoire.</div>
+            @if (
+              form.get(c.cle)?.touched &&
+              form.get(c.cle)?.invalid
+              ) {
+
+              <div class="err">
+                Ce champ est obligatoire.
+              </div>
+
             }
+
           </div>
+
         }
 
         @if (actif().statut) {
+
           <label class="case full">
-            <input type="checkbox" formControlName="enCours">
+
+            <input
+              type="checkbox"
+              formControlName="enCours">
+
             Définir comme année en cours
+
           </label>
+
         }
+
       </div>
 
       <div class="m-foot">
-        <button class="btn" type="button" (click)="fermer()">Annuler</button>
-        <button class="btn primary" type="submit">
-          {{ modeEdition() ? 'Mettre à jour' : 'Continuer' }}
+
+        <button
+          class="btn"
+          type="button"
+          (click)="fermer()">
+
+          Annuler
+
         </button>
+
+        <button
+          class="btn primary"
+          type="submit">
+
+          {{ modeEdition() ? 'Mettre à jour' : 'Continuer' }}
+
+        </button>
+
       </div>
+
     </form>
+
   }
+
 </dialog>
 
-<dialog #confirmationModal class="confirmation-modal" (click)="clicFondConfirmation($event)">
+
+<!-- MODALE DE CONFIRMATION -->
+
+<dialog
+  #confirmationModal
+  class="confirmation-modal"
+  (click)="clicFondConfirmation($event)">
+
   @if (confirmationOuverte()) {
+
     <div class="m-head">
+
       <h2>Confirmer l'ajout</h2>
-      <button class="x" type="button" (click)="annulerConfirmation()" aria-label="Fermer">&times;</button>
+
+      <button
+        class="x"
+        type="button"
+        (click)="annulerConfirmation()">
+
+        &times;
+
+      </button>
+
     </div>
+
     <section class="confirmation">
-      <p>Confirmez-vous l'ajout de « <strong>{{ libelleConfirmation() }}</strong> » dans « {{ actif().label }} » ?</p>
+
+      <p>
+
+        Voulez-vous ajouter
+
+        {{ nomElementConfirmation() }}
+
+        <strong>
+          {{ libelleConfirmation() }}
+        </strong>
+
+        ?
+
+      </p>
+
       <div class="m-foot">
-        <button class="btn btn-annuler" type="button" (click)="annulerConfirmation()">Annuler</button>
-        <button class="btn btn-confirmer" type="button" (click)="confirmerEnregistrement()">Confirmer</button>
+
+        <button
+          class="btn btn-annuler"
+          type="button"
+          (click)="annulerConfirmation()">
+
+          Annuler
+
+        </button>
+
+        <button
+          class="btn btn-confirmer"
+          type="button"
+          (click)="confirmerEnregistrement()">
+
+          Confirmer
+
+        </button>
+
       </div>
+
     </section>
+
   }
+
 </dialog>

@@ -87,6 +87,30 @@
   font-weight: 700;
 }
 
+/* ---------- Horloge (date et heure en temps réel) ---------- */
+.horloge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 8px;
+  padding-right: 18px;
+  border-right: 1px solid rgb(255 255 255 / 40%);
+  color: #fff;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.horloge-date {
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.horloge-heure {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums; /* les chiffres gardent la même largeur */
+  letter-spacing: .04em;
+}
+
 .logout-icon {
   margin-left: 12px;
   padding: 5px 8px;
@@ -262,8 +286,15 @@
     font-size: 12px;
   }
 
-  .topbar-user > span:nth-child(2) {
+  /* on masque le nom, et la date de l'horloge (l'heure reste visible) */
+  .user-info,
+  .horloge-date {
     display: none;
+  }
+
+  .horloge {
+    padding-right: 10px;
+    margin-right: 0;
   }
 
   .app-shell {
@@ -282,7 +313,34 @@
   .profile-label,
   .nav-section,
   .logout-button {
-    display: none;
+    .logout-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - 24px);
+      margin: 12px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #c0392b;      /* rouge */
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(192, 57, 43, .35);
+      transition: all .2s;
+    }
+
+    .logout-button:hover {
+      background: #a93226;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(192, 57, 43, .45);
+    }
+
+    .logout-button:active {
+      transform: translateY(0);
+    }
   }
 
   .sidebar nav {
@@ -312,4 +370,110 @@ a.active, .menu-item.active {
   color: white !important;
   font-weight: bold;
   border-radius: 4px;
+}
+.sous-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 6px 0 10px 14px;
+  padding-left: 10px;
+  border-left: 2px solid #d9762f;
+}
+
+.sous-menu a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: darkolivegreen;
+  text-decoration: none;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.sous-menu a:hover {
+  background: #fbe9e2;
+  color: chocolate ;
+}
+
+.sous-menu a.active {
+  background: #fbe9e2;
+  color: #c8512a;
+  font-weight: 600;
+}
+
+.nav-parent {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 13px 14px;
+}
+
+
+.fleche {
+  margin-left: auto;
+  transition: transform .25s;
+}
+
+.fleche.ouvert {
+  transform: rotate(180deg);
+}
+.nav-groupe,
+.nav-niveau2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.nav-groupe {
+  padding: 12px 16px;
+  color: var(--linx-green);
+  font-weight: 700;
+  background: #f1f8fc;
+}
+
+.mission-sous-menu { background: #fff8f2; }
+
+.nav-niveau2 {
+  padding: 12px 16px 12px 32px;
+  color: #444;
+}
+.nav-niveau2:hover { background: #ffeedd; }
+
+.etoile { margin-right: 8px; color: #222; }
+
+.sous-lien {
+  display: block;
+  padding: 10px 16px 10px 60px;
+  font-weight: 700;
+  color: #222;
+  text-decoration: none;
+}
+.sous-lien.active { color: var(--linx-orange-dark); }
+
+.mission-nav,
+.parametres-nav {
+  display: block;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-link.active {
+  background-color: #e85d35;
+  color: #ffffff;
 }

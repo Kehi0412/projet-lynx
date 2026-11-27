@@ -1,15 +1,32 @@
 <header class="topbar">
   <a class="brand" routerLink="/home/accueil" aria-label="LINX - Tableau de bord">
     <img src="/img_1.png" alt="">
-    <span class="brand-title">LINX<small>GESTION DES MISSIONS</small></span>
+    <span class="brand-title">LINX<small>MISSIONS & INSPECTIONS</small></span>
   </a>
   <div class="topbar-poste">{{ poste }}</div>
   <div class="topbar-user">
-    <span class="user-avatar" aria-hidden="true">AD</span>
-    <span><strong>Administrateur</strong><small>Profil {{ profil }}</small></span>
+
+    <div class="horloge" aria-live="off">
+      <span class="horloge-date">{{ dateAffichee() }}</span>
+      <strong class="horloge-heure">{{ heureAffichee() }}</strong>
+    </div>
+
+    <span class="user-avatar" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="#bbb">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6z"/>
+      </svg>
+    </span>
+    <span class="user-info"><strong>Administrateur</strong><small>Profil {{ profil }}</small></span>
+
     <button type="button" class="logout-icon" (click)="deconnexion()" aria-label="Déconnexion" title="Déconnexion">
-      ⏻
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M12 3v9"/>
+        <path d="M6.3 6.3a8 8 0 1 0 11.4 0"/>
+      </svg>
     </button>
+
   </div>
 </header>
 
@@ -22,21 +39,19 @@
         <span class="nav-icon" aria-hidden="true">🏠</span> Tableau de bord
       </a>
 
-      <p class="nav-section">GESTION DES MISSIONS</p>
-      <a routerLink="/home/mission" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">🔲</span> Missions
-      </a>
-      <a routerLink="/home/inspection" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">🔍</span> Inspections
-      </a>
-      <a routerLink="/home/audits" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">☑</span> Audits
-      </a>
-      <a routerLink="/home/rapport" routerLinkActive="active">
-        <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
-      </a>
+      <div class="mission-nav">
+        <a class="nav-link" routerLink="/home/missions" routerLinkActive="active">
+          <span class="nav-icon" aria-hidden="true">■</span>
+          <span>Mission</span>
+        </a>
 
-      <p class="nav-section">ADMINISTRATION</p>
+      </div>
+
+      <div class="parametres-nav">
+        <a routerLink="/home/rapports" routerLinkActive="active">
+          <span class="nav-icon" aria-hidden="true">📄</span> Rapports et statistiques
+        </a>
+      </div>
       <div class="parametres-nav">
         <a routerLink="/home/parametres" routerLinkActive="active" (click)="basculerParametres()"
            [attr.aria-expanded]="parametresOuverts()">
@@ -57,7 +72,6 @@
         }
       </div>
     </nav>
-    <button type="button" class="logout-button" (click)="deconnexion()">Déconnexion</button>
   </aside>
 
   <main class="main-content">

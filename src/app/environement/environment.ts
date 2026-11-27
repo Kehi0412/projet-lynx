@@ -1,7 +1,6 @@
-export const  environment: any = {
+export const environment: any = {
   production: false,
   dev: true,
-
-  urlServerApi: 'http://100.91.33.71:8080'
-
-}
+  modeDemo: false, // true = connexion locale, sans back-end
+  urlServerApi: 'https://linx-api.onrender.com',
+};

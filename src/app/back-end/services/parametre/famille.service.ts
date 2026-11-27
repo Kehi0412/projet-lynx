@@ -23,7 +23,6 @@ export class FamilleService {
       catchError(this._handleError),
     );
   }
-
   getById(id: number): Observable<Famille> {
     return this.apiService._get(`${this.endpoint}/${id}`).pipe(
       map((response: any) => response),

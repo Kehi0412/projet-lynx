@@ -2,15 +2,74 @@
   display: block;
 }
 
+/* ---------- Onglets Mission d'inspection / Mission d'audit ---------- */
+.onglets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--linx-border);
+}
+
+.onglet {
+  padding: 8px 16px;
+  border: 1px solid var(--linx-border);
+  border-radius: 6px;
+  background: #fff;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.onglet:hover {
+  border-color: var(--linx-orange);
+  color: var(--linx-orange);
+}
+
+.onglet.actif {
+  border-color: var(--linx-orange);
+  background: var(--linx-orange);
+  color: #fff;
+}
+
+/* ---------- Tableau ---------- */
 .table-wrap {
   border-top: 3px solid var(--linx-orange);
 }
 
+.actions {
+  white-space: nowrap;
+}
+
+.icone {
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icone:hover {
+  transform: scale(1.2);
+}
+
+/* ---------- Fenêtre modale ---------- */
+dialog {
+  width: min(720px, 94vw);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 6px;
+  background: #fff;
+}
+
 .m-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 15px 19px;
+  justify-content: space-between;
+  padding: 15px 20px;
   border-bottom: 1px solid #e3e6e8;
 }
 
@@ -24,12 +83,20 @@
   border: 0;
   background: transparent;
   color: #596168;
-  font-size: 25px;
+  font-size: 26px;
+  line-height: 1;
   cursor: pointer;
 }
 
+.x:hover {
+  color: var(--linx-orange);
+}
+
+/* ---------- Formulaire ---------- */
 form {
+  max-height: 75vh;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .grid {
@@ -51,12 +118,13 @@ label {
 }
 
 input,
+select,
 textarea {
   width: 100%;
   min-height: 38px;
   padding: 9px 10px;
   border: 1px solid #cfd4d7;
-  border-radius: 2px;
+  border-radius: 4px;
   background: #fff;
   color: var(--linx-text);
 }
@@ -64,6 +132,19 @@ textarea {
 textarea {
   min-height: 85px;
   resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--linx-orange);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(245 121 32 / 18%);
+}
+
+/* Champ invalide après un clic dessus */
+.ng-touched.ng-invalid {
+  border-color: #a52c24;
 }
 
 .err {
@@ -79,6 +160,7 @@ textarea {
   margin-top: 20px;
 }
 
+/* ---------- Mobile ---------- */
 @media (max-width: 560px) {
   .grid {
     grid-template-columns: 1fr;
@@ -86,5 +168,9 @@ textarea {
 
   .full {
     grid-column: auto;
+  }
+
+  .onglets {
+    flex-wrap: wrap;
   }
 }

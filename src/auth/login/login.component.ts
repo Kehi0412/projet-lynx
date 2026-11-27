@@ -5,6 +5,8 @@ import { Login } from '../../app/back-end/services/login';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { StorageService } from '../../app/back-end/services/storage.service';
+import { environment } from '../../app/environement/environment';
+import { connexionDemo } from '../demo-auth';
 
 @Component({
   selector: 'app-login',
@@ -39,46 +41,8 @@ export class LoginComponent {
   erreur = signal('');
   succes = signal(false);
   survol = signal(false);
-  /*  connexion() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
 
-    this.spinner.show();
-    this.isLoading = true;
-
-    const formData = this.loginForm.getRawValue();
-    const data = {
-      matricule: formData.matricule,
-      motDePasse: formData.motDePasse,
-    };
-
-    this.loginService.login(data).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
-        this.isLoading = false;
-
-        if (res?.token) {
-          localStorage.setItem('userData', JSON.stringify(res));
-          this.toast.success('Connexion réussie');
-          this.router.navigate(['/home/tableaudebord']);
-        } else {
-          this.toast.error('Problème de token');
-          console.error('Structure de réponse inattendue:', res);
-        }
-      },
-      error: (error: any) => {
-        this.spinner.hide();
-        this.isLoading = false;
-        console.error('Erreur de connexion:', error);
-        this.toast.error(error.error?.message || 'Erreur lors de la connexion');
-      },
-    });
-  }*/
   connexion() {
-
-
     if (this.succes()) return;
 
     if (this.loginForm.invalid) {
@@ -86,9 +50,33 @@ export class LoginComponent {
       return;
     }
 
+    const formData = this.loginForm.getRawValue();
+
+    // ---------- MODE DÉMO : connexion locale, sans back-end ----------
+    if (environment.modeDemo) {
+      if (connexionDemo(formData.matricule, formData.motDePasse)) {
+        // faux profil, pour les pages qui lisent "userData"
+        this.storage.setItem(
+          'userData',
+          JSON.stringify({
+            token: 'demo',
+            matricule: formData.matricule,
+            nom: 'Administrateur',
+            profil: 'ADMINISTRATEUR',
+          }),
+        );
+        this.erreur.set('');
+        this.succes.set(true);
+        setTimeout(() => this.router.navigate(['/home/accueil']));
+      } else {
+        this.afficherErreur('Matricule ou mot de passe incorrect.');
+      }
+      return;
+    }
+
+    // ---------- MODE NORMAL : connexion via le back-end ----------
     this.isLoading = true;
 
-    const formData = this.loginForm.value;
     const data = {
       matricule: formData.matricule,
       motDePasse: formData.motDePasse,
@@ -100,15 +88,17 @@ export class LoginComponent {
         this.storage.setItem('userData', JSON.stringify(res));
         this.erreur.set('');
         this.succes.set(true);
-        setTimeout(() => this.router.navigate(['/home/accueil']), );
+        setTimeout(() => this.router.navigate(['/home/accueil']));
       },
       error: (error: any) => {
         this.isLoading = false;
-        const errorMessage = error.error?.message || 'Erreur lors de la connexion';
+        const errorMessage =
+          typeof error === 'string' ? error : error?.error?.message || 'Erreur lors de la connexion';
         this.afficherErreur(errorMessage);
       },
     });
   }
+
   private minuteur: any;
 
   afficherErreur(msg: string) {
